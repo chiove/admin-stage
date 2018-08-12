@@ -5,6 +5,16 @@ div{
   width: 100%;
   min-width: 12.80rem;
 }
+.body-content{
+  margin-top: .18rem;
+}
+.body-content-title{
+  font-size:.16rem;
+  font-family:MicrosoftYaHei-Bold;
+  color:rgba(85,85,85,1);
+  font-weight: bold;
+  padding: .19rem 0 .09rem 0;
+}
 .tool-bar-container,.tool-bar-container-border{
   font-size:.14rem;
   font-family:MicrosoftYaHei-Bold;
@@ -40,4 +50,21 @@ div{
 .daily-data-pagination-container{
   margin-top: .1rem;
   text-align: right;
+}
+.middle-line{
+  display: inline-block;
+  height: .1rem;
+  width: .02rem;
+  background:rgba(167,167,167,1);
+  margin: 0 .12rem;
+}
+.index-router{
+  font-size:.1rem;
+  font-family:MicrosoftYaHei;
+  color:rgba(187,187,187,1);
+}
+.active-router{
+  font-size:.1rem;
+  font-family:MicrosoftYaHei;
+  color: #555555;
 }

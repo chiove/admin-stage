@@ -10,32 +10,36 @@ export default new Router({
     },
     {
       path: '/index',
-      redirect:'/index/dailyData',
+      redirect:'/index/changePassWord',
       component: resolve => require(['@/components/contain/index'],resolve),
       children:[
       {
-        path: '/index/dailyData',
-        component: resolve => require(['@/components/containFrame/dailyData'],resolve),
+        path: '/index/changePassWord',
+        component: resolve => require(['@/components/containFrame/changePassWord'],resolve),
       },
       {
-        path: '/index/weekData',
-        component: resolve => require(['@/components/containFrame/weekData'],resolve),
+        path: '/index/clockInSettings',
+        component: resolve => require(['@/components/containFrame/clockInSettings'],resolve),
       },
       {
-        path: '/index/studentsCare',
-        component: resolve => require(['@/components/containFrame/studentsCare'],resolve),
+        path: '/index/bigViewportSettings',
+        component: resolve => require(['@/components/containFrame/bigViewportSettings'],resolve),
       },
       {
-        path: '/index/studentsSearch',
-        component: resolve => require(['@/components/containFrame/studentsSearch'],resolve),
+        path: '/index/learnDateSettings',
+        component: resolve => require(['@/components/containFrame/learnDateSettings'],resolve),
       },
       {
-        path: '/index/teacherCheck',
-        component: resolve => require(['@/components/containFrame/teacherCheck'],resolve),
+        path: '/index/roleManagement',
+        component: resolve => require(['@/components/containFrame/roleManagement'],resolve),
       },
       {
-        path: '/index/studentsDetails',
-        component: resolve => require(['@/components/containFrame/studentsDetails'],resolve),
+        path: '/index/realTimeStatistics',
+        component: resolve => require(['@/components/containFrame/realTimeStatistics'],resolve),
+      },
+      {
+        path: '/index/checkData',
+        component: resolve => require(['@/components/containFrame/checkData'],resolve),
       }
       ]
     },
