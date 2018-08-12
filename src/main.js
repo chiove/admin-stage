@@ -11,7 +11,6 @@ import Vuex from 'vuex'
 import echarts from 'echarts'
 import store from './store'
 import './common/css/common.css'
-
 Vue.config.productionTip = false
 
 promise.polyfill()

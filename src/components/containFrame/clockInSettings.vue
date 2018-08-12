@@ -70,9 +70,30 @@
             <div>打卡地址：云华校区</div>
             <div class="clock-in-settings-address-container">
               <span>详细地址：打卡地点默认为中心点100m范围内</span>
+              <el-select v-model="value1" size="mini" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <el-button size="mini"  type="primary">删除打卡地点</el-button>
             </div>
-            <div class="clock-in-settings-address-container">打卡地址：云华校区</div>
-            <div>详细地址：打卡地点默认为中心点100m范围内</div>
+            <div>打卡地址：云华校区</div>
+            <div class="clock-in-settings-address-container">
+              <span>详细地址：打卡地点默认为中心点100m范围内</span>
+              <el-select v-model="value1" size="mini" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <el-button size="mini"  type="primary">新增打卡地点</el-button>
+              <el-button size="mini"  type="primary">删除打卡地点</el-button>
+            </div>
             <div class="clock-in-settings-map-container"></div>
           </el-form-item>
           <el-form-item label="安全设置">
@@ -103,6 +124,7 @@
           value6:'',
           value3:'',
           value10:true,
+          options:'',
           ruleForm: {
             value1:'',
             value3:'',

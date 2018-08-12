@@ -112,6 +112,9 @@
   width: 100%;
   height: 100%;
 }
+.left_list ul li a:active{
+  color: #fff;
+}
 .left_list .router-link-active{
   color: #0F3A88 !important;
 }
