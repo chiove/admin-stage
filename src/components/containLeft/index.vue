@@ -117,6 +117,7 @@
 }
 .left_list .router-link-active{
   color: #0F3A88 !important;
+  background: #fff
 }
   .left_list i{
     color: #fff;

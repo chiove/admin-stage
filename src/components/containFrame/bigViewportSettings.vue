@@ -16,7 +16,7 @@
             <el-input v-model="form.input" size="mini" placeholder="请输入文本：长度30个中文字符"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button  size="mini">返回</el-button>
+            <el-button  size="mini" @click="backRouterFun">返回</el-button>
             <el-button type="primary"  size="mini" @click="onSubmit">确认</el-button>
           </el-form-item>
         </el-form>
@@ -26,8 +26,21 @@
 </template>
 
 <script>
+  import qs from 'qs'
     export default {
       name: "bigViewportSettings",
+      mounted:function () {
+        this.$axios.get('/api/system-config',{
+          params:{}
+        }).then(function (res) {
+          if(res){
+              console.log(res)
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+
+      },
       data(){
         return {
           form: {
@@ -37,7 +50,25 @@
       },
       methods: {
         onSubmit() {
-          console.log('submit!');
+          const _this = this
+          this.$axios.put('/api/screen-config',{
+            reqDTO:this.form.input,
+            header:{
+              contentType:"application/json"
+            },
+          }).then(function (res) {
+            if(res){
+
+            }
+          }).catch(function (error) {
+            _this.$notify.error({
+              message: 'error',
+              position: 'bottom-right'
+            });
+          })
+        },
+        backRouterFun(){
+          this.$router.go(-1)
         }
       }
     }

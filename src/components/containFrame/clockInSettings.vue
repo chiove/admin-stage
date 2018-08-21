@@ -11,40 +11,36 @@
     <div class="body-content">
       <div class="body-content-title">学生打卡设置</div>
       <div class="clock-in-settings-container">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="1rem" class="change-pass-word-form">
-          <el-form-item label="打卡时间" prop="name">
-            <el-time-picker
-              is-range
-              size="mini"
-              v-model="value4"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              placeholder="选择时间范围">
-            </el-time-picker>
-          </el-form-item>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="1.2rem" class="change-pass-word-form">
           <div class="check-room-time-container">
-            <el-form-item label="查寝开始时间">
-              <el-time-select
-                v-model="value1"
+            <el-form-item label="打卡时间" prop="clockStartTime">
+              <el-time-picker
+                v-model="clockStartTime"
                 size="mini"
-                :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30'
-            }"
+                placeholder="打卡开始时间">
+              </el-time-picker>
+            </el-form-item>
+            <el-form-item prop="clockEndTime">
+              <el-time-picker
+                arrow-control
+                v-model="clockEndTime"
+                size="mini"
+                placeholder="打卡结束时间">
+              </el-time-picker>
+            </el-form-item>
+          </div>
+          <div class="check-room-time-container">
+            <el-form-item label="查寝开始时间" prop="checkDormStartTime">
+              <el-time-select
+                v-model="checkDormStartTime"
+                size="mini"
                 placeholder="选择时间">
               </el-time-select>
             </el-form-item>
-            <el-form-item label="次日截止时间">
+            <el-form-item label="次日截止时间" prop="checkDormkEndTime">
               <el-time-select
-                v-model="value1"
+                v-model="checkDormkEndTime"
                 size="mini"
-                :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30'
-            }"
                 placeholder="选择时间">
               </el-time-select>
             </el-form-item>
@@ -98,10 +94,10 @@
           </el-form-item>
           <el-form-item label="安全设置">
             <el-switch
-              v-model="value10"
-              active-value="100"
-              inactive-value="1"
-              active-text=" "
+              v-model="checkDevice"
+              active-value="1"
+              inactive-value="2"
+              active-text=""
               inactive-text="是否允许用户使用常用手机打卡开关">
             </el-switch>
           </el-form-item>
@@ -119,6 +115,11 @@
       name: "ClockInSettings",
       data(){
         return {
+          clockTimes:'', /*打卡开始时间*/
+          clockEndTime:'',/*打卡结束时间*/
+          checkDormStartTime:'',/*查寝开始时间*/
+          checkDormkEndTime:'',/*查寝结束时间*/
+          checkDevice:'1',/*是否检查设备*/
           value4: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
           value1:'',
           value6:'',
@@ -137,15 +138,17 @@
             desc: ''
           },
           rules: {
-            name: [
-              { required: true, message: '请输入活动名称', trigger: 'blur' },
-              { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            clockStartTime: [
+              { required: true, message: '请选择时间', trigger: 'blur' },
             ],
-            region: [
-              { required: true, message: '请选择活动区域', trigger: 'change' }
+            clockEndTime:[
+              { required: true, message: '请选择时间', trigger: 'blur' },
+              ],
+            checkDormStartTime: [
+              { required: true, message: '请选择时间', trigger: 'blur' }
             ],
-            date1: [
-              { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+            checkDormkEndTime: [
+              { required: true, message: '请选择时间', trigger: 'blur' }
             ],
             date2: [
               { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
