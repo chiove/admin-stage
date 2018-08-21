@@ -40,7 +40,12 @@ export default new Router({
       {
         path: '/index/checkData',
         component: resolve => require(['@/components/containFrame/checkData'],resolve),
-      }
+      },
+        {
+          name:'studentsDetails',
+          path: '/index/studentsDetails',
+          component: resolve => require(['@/components/containFrame/studentsDetails'],resolve),
+        }
       ]
     },
   ]

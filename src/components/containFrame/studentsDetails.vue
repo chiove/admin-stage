@@ -5,10 +5,10 @@
       <span class="students-details-header-title">
         个人详情
       </span>
-      <span></span>
+        <span></span>
       </div>
       <div>
-        <el-button type="primary" size="mini">返回</el-button>
+        <el-button type="primary" size="mini" @click="backRouterFun">返回</el-button>
       </div>
     </div>
     <div class="students-details-banner">
@@ -16,48 +16,48 @@
       <div class="students-details-banner-content">
         <div class="students-details-banner-content-information">
           <div class="students-details-banner-content-img">
-            <img src="" alt="">
+            <img :src="dataList.profilePhoto" alt="">
           </div>
           <div class="students-details-banner-content-information-item">
-            <span class="students-details-banner-content-information-name">李正华</span>
-            <span>学院名称：计算机学院</span>
-            <span>辅导员：孔连顺</span>
+            <span class="students-details-banner-content-information-name">{{dataList.studentName}}</span>
+            <span>学院名称：{{dataList.collegeName}}</span>
+            <span>辅导员：{{dataList.instructorName}}</span>
           </div>
           <div class="students-details-banner-content-information-item">
-            <span>专业名称：计算机专业</span>
-            <span>寝室号：521</span>
+            <span>专业名称：{{dataList.majorName}}</span>
+            <span>寝室号：{{dataList.dormitoryName}}</span>
           </div>
           <div class="students-details-banner-content-information-item">
-            <span>学号：2012022364</span>
-            <span>床号：左1</span>
+            <span>学号：{{dataList.studentCode}}</span>
+            <span>床号：{{dataList.bedCode}}号</span>
           </div>
           <div class="students-details-banner-content-information-item">
-            <span>班级：计算机01班</span>
+            <span>班级：{{dataList.className}}</span>
           </div>
         </div>
         <div class="students-details-banner-content-data">
           <div class="students-details-banner-content-data-item">
             <div class="students-details-banner-content-data-item-number">
-              200
+              {{dataList.totalCared}}
             </div>
             <div class="students-details-banner-content-data-item-text">
-              昨日晚归人数
+              被关怀次数
             </div>
           </div>
           <div class="students-details-banner-content-data-item">
             <div class="students-details-banner-content-data-item-number">
-              200
+              {{dataList.totalStayOut}}
             </div>
             <div class="students-details-banner-content-data-item-text">
-              昨日晚归人数
+              累计未归次数
             </div>
           </div>
           <div class="students-details-banner-content-data-item">
             <div class="students-details-banner-content-data-item-number">
-              200
+              {{dataList.totalStayOutLate}}
             </div>
             <div class="students-details-banner-content-data-item-text">
-              昨日晚归人数
+              累计晚归次数数
             </div>
           </div>
         </div>
@@ -78,7 +78,13 @@
           </el-date-picker>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="关怀反馈数据" name="first">关怀反馈数据</el-tab-pane>
+          <el-tab-pane label="关怀反馈数据" name="first">
+            <el-table :data="alCareListData"  v-loading="loadingStatus" style="width: 100%">
+              <el-table-column prop="taskDate" label="任务时间"></el-table-column>
+              <el-table-column prop="dealDate" label="处理时间"></el-table-column>
+              <el-table-column prop="remark" label="反馈结果"></el-table-column>
+            </el-table>
+          </el-tab-pane>
           <el-tab-pane label="门禁打卡数据" name="second">门禁打卡数据</el-tab-pane>
           <el-tab-pane label="历史打卡数据" name="third">历史打卡数据</el-tab-pane>
         </el-tabs>
@@ -88,20 +94,87 @@
 </template>
 
 <script>
-    export default {
-      name: "studentsDetails",
-      data() {
-        return {
-          activeName: 'first',
-          value:''
-        };
-      },
-      methods: {
-        handleClick(tab, event) {
-          console.log(tab, event);
-        }
+  export default {
+    name: "studentsDetails",
+    activated:function(){
+      if(this.$route.params){
+        this.dataList = this.$route.params
+        this.studentId = this.$route.params.studentId
       }
+    },
+    data() {
+      return {
+        dataList:{},/*详情页数据*/
+        studentId:1,/*学生ID*/
+        alCareListData:[],/*已关怀列表数据*/
+        clockListData:[],/*门禁打卡数据*/
+        historyClockListData:[],/*历史打卡数据*/
+        loadingStatus:false,/*加载显示*/
+        activeName: 'first',
+        value:''
+      };
+    },
+    methods: {
+      /*返回上一级路由*/
+      backRouterFun:function(){
+        this.$router.go(-1)
+      },
+      /*tab切换触发事件*/
+      handleClick(tab, event) {
+        console.log(tab)
+        if(tab.name==='first'){
+          this.getAlCareListData()
+        }
+      },
+      /*获取已关怀列表*/
+      getAlCareListData:function () {
+        this.loadingStatus = true
+        const _this = this
+        this.$axios.get('/api/care-student',{
+          params:{
+            studentId:_this.studentId
+          }
+        }).then(function (res) {
+          if(res){
+            _this.alCareListData = res.data.result
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+        setTimeout(() => {
+          this.loadingStatus = false
+        }, 2000)
+      },
+      getClockListData:function () {
+        const _this = this
+        this.$axios.get('/api/care-student',{
+          params:{
+            studentId:_this.studentId
+          }
+        }).then(function (res) {
+          if(res){
+            _this.alCareListData = res.data.result
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+      },
+      getHistoryClockListData:function () {
+        const _this = this
+        this.$axios.get('/api/care-student',{
+          params:{
+            studentId:_this.studentId
+          }
+        }).then(function (res) {
+          if(res){
+            _this.alCareListData = res.data.result
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+      },
     }
+  }
 </script>
 
 <style scoped>
@@ -139,7 +212,7 @@
     width: .88rem;
   }
   .students-details-banner-content-information{
-    width: 8.8rem;
+    width: 10.8rem;
     display: flex;
     justify-content: flex-start;
   }
@@ -156,10 +229,10 @@
     margin-bottom: .1rem;
   }
   .students-details-banner-content-information-name{
-     font-size:14px;
-     font-family:MicrosoftYaHei-Bold;
-     color:rgba(85,85,85,1);
-     margin-bottom: .17rem;
+    font-size:14px;
+    font-family:MicrosoftYaHei-Bold;
+    color:rgba(85,85,85,1);
+    margin-bottom: .17rem;
   }
   .students-details-banner-content-data{
     width: 6.3rem;

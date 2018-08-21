@@ -13,7 +13,7 @@
       <div class="big-viewport-input">
         <el-form ref="form" :model="form" >
           <el-form-item>
-            <el-input v-model="form.input" size="mini" placeholder="请输入文本：长度30个中文字符"></el-input>
+            <el-input type="textarea" v-model="form.input" placeholder="请输入文本：长度30个中文字符"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button  size="mini" @click="backRouterFun">返回</el-button>
@@ -30,11 +30,11 @@
     export default {
       name: "bigViewportSettings",
       mounted:function () {
-        this.$axios.get('/api/system-config',{
-          params:{}
-        }).then(function (res) {
+        const _this = this
+        this.$axios.get('/api/screen-config').then(function (res) {
           if(res){
-              console.log(res)
+            console.log(res)
+            _this.form.input = res.data.data
           }
         }).catch(function (error) {
           console.log(error)
@@ -52,17 +52,20 @@
         onSubmit() {
           const _this = this
           this.$axios.put('/api/screen-config',{
-            reqDTO:this.form.input,
-            header:{
-              contentType:"application/json"
-            },
+            "carouselText": `${this.form.input}`
           }).then(function (res) {
             if(res){
-
+              if(res.data.code ==='000000'){
+                _this.$notify({
+                  message: '设置成功',
+                  position: 'bottom-right',
+                  type: 'success'
+                })
+              }
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: 'error',
+              message: error,
               position: 'bottom-right'
             });
           })

@@ -14,38 +14,31 @@
       </div>
       <div class="real-time-statistics-chart-container" id="data-chart-bar"></div>
       <div class="real-time-statistics-table-title">到勤情况详情</div>
-      <el-table
-        :data="tableData"
-        style="width: 100%"
-        :default-sort = "{prop: 'date', order: 'descending'}"
-      >
-        <el-table-column
-          prop="date"
-          label="日期"
-          sortable
-          width="180">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="姓名"
-          sortable
-          width="180">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="地址"
-        >
-        </el-table-column>
-      </el-table>
+        <el-table :data="tableListData"  v-loading="loadingStatus" style="width: 100%">
+          <el-table-column prop="studentName" label="姓名"></el-table-column>
+          <el-table-column prop="studentCode" label="学号"></el-table-column>
+          <el-table-column prop="className" label="班级"></el-table-column>
+          <el-table-column prop="collegeName" label="学院名称"></el-table-column>
+          <el-table-column prop="majorName" label="专业名称"></el-table-column>
+          <el-table-column prop="instructorName" label="辅导员"></el-table-column>
+          <el-table-column prop="buildingName" label="宿舍楼栋"></el-table-column>
+          <el-table-column prop="dormitoryName" label="寝室号"></el-table-column>
+          <el-table-column prop="bedCode" label="床号"></el-table-column>
+          <el-table-column prop="colckStatus" label="实时状态"></el-table-column>
+          <el-table-column label="个人详情">
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       <div class="daily-data-pagination-container">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page.sync="currentPage"
-          :page-size="100"
+          :current-page.sync="pageNo"
+          :page-size="10"
           layout="prev, pager, next, jumper"
-          :total="1000">
+          :total="pagesTotal">
         </el-pagination>
       </div>
     </div>
@@ -55,39 +48,85 @@
 <script>
   require('echarts/theme/macarons');
   export default {
-      name: "realTimeStatistics",
+    name: "realTimeStatistics",
     mounted:function(){
-      this.drawBar()
+      /*图表渲染*/
+      this.getChartListData()
+      /*默认表格显示*/
+      this.getTableListData()
     },
     data(){
         return {
-          tableData: [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-          }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-          }]
+          chartBuildingList:[],/*图表楼栋数据*/
+          chartAlClockList:[],/*图表已打卡数据*/
+          chartNotClockList:[],/*图表未打卡数据*/
+          tableListData:[],/*表格数据*/
+          pageNo:1,/*分页条当前页*/
+          pagesTotal:1,/*总页数*/
+          loadingStatus:false/*加载显示*/
         }
     },
     methods:{
-        handleSizeChange(val) {
-          console.log(`每页 ${val} 条`);
+        /*获取图表数据*/
+        getChartListData:function(){
+          const _this = this
+          this.$axios.get('/api/real-time-stat/clock-stat-by-bulding',{
+            params:{}
+          }).then(function (res) {
+            if(res){
+              res.data.data.forEach(function (item,index) {
+                _this.chartBuildingList.push(item.buildingName)
+                _this.chartAlClockList.push(item.clockCount)
+                _this.chartNotClockList.push(item.notClockCount)
+                _this.drawBar()
+              })
+            }
+          }).catch(function (error) {
+            _this.$notify.error({
+              message: error,
+              position: 'bottom-right'
+            });
+          })
         },
+       /*获取表格数据*/
+        getTableListData:function(pageNo){
+          const _this = this
+          this.loadingStatus = true
+          this.$axios.get('/api/real-time-stat/clock-stat-by-student',{
+            params:{
+              pageNo:pageNo,
+              pageSize:10
+            }
+          }).then(function (res) {
+            if(res){
+              _this.tableListData = res.data.data.result
+              _this.pagesTotal =  res.data.data.totalPages
+              _this.pageNo = res.data.data.pageNo
+            }
+          }).catch(function (error) {
+            _this.$notify.error({
+              message: error,
+              position: 'bottom-right'
+            });
+          })
+          setTimeout(() => {
+            this.loadingStatus = false
+          }, 2000)
+        },
+        /*分页查询*/
         handleCurrentChange(val) {
-          console.log(`当前页: ${val}`);
+          this.getTableListData(val)
         },
+        /*查看详情页*/
+       handleClick(row) {
+        this.$router.push({
+          name:'studentsDetails',
+          path:'/index/studentsDetails',
+          params:row
+         })
+       },
         drawBar:function () {
+          const _this = this
           let dataChartLine = this.$echarts.init(document.getElementById('data-chart-bar'),'macarons')
           dataChartLine.setOption({
             tooltip : {
@@ -107,11 +146,11 @@
             },
             xAxis: {
               type: 'category',
-              data: ['1号楼','2号楼','3号楼','4号楼','5号楼','6号楼','7号楼','8号楼']
+              data: _this.chartBuildingList
             },
             series: [
               {
-                name: '已归',
+                name: '已打卡',
                 type: 'bar',
                 stack: '总量',
                 label: {
@@ -120,10 +159,10 @@
                     position: 'insideRight'
                   }
                 },
-                data: [320, 302, 301, 334, 390, 330, 320,250]
+                data: _this.chartAlClockList
               },
               {
-                name: '晚归',
+                name: '未打卡',
                 type: 'bar',
                 stack: '总量',
                 label: {
@@ -132,7 +171,7 @@
                     position: 'insideRight'
                   }
                 },
-                data: [120, 132, 101, 134, 90, 230, 210,120]
+                data: _this.chartNotClockList
               },
               {
                 name: '未归',
@@ -144,7 +183,7 @@
                     position: 'insideRight'
                   }
                 },
-                data: [220, 182, 191, 234, 290, 330, 310, 76]
+                data: []
               }
             ]
           })
