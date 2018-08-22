@@ -28,7 +28,6 @@
              </el-form>
            </div>
            <div>
-             <el-button type="primary" size="mini">手动同步</el-button>
              <el-button type="primary" size="mini" @click="cleanPhone">清空常用手机</el-button>
            </div>
          </div>
@@ -72,9 +71,6 @@
                   </div>
                 </el-form-item>
               </el-form>
-            </div>
-            <div>
-              <el-button type="primary" size="mini">手动同步</el-button>
             </div>
           </div>
           <el-table :data="instructorListData" v-loading="loadingStatus" style="width: 100%">
@@ -226,6 +222,7 @@
              :button-texts="['到左边', '到右边']"
              filter-placeholder="搜索工号"
              v-model="orgIdStaffListDataValue"
+             @change="getRightList"
              :data="orgIdStaffListData">
            </el-transfer>
          </div>
@@ -300,6 +297,7 @@
           defaultProps: {children: 'children', label: 'orgName', id:'orgId'},/*树形机构格式*/
           orgIdStaffListData:[],/*根据机构id查询的教职工列表*/
           orgIdStaffListDataValue:[],/*穿梭框默认值*/
+          rightListData:[],/*右侧数据列表*/
         }
       },
       methods: {
@@ -339,7 +337,7 @@
           this.loadingStatus = true
           this.$axios.get('/api/user-role-manage/instructor',{
             params:{
-              ameOrCode:nameOrCode,
+              nameOrCode:nameOrCode,
               pageNo:pageNo,
               pageSize:10
             }
@@ -369,7 +367,7 @@
           this.loadingStatus = true
           this.$axios.get('/api/user-role-manage/secondary-college-admin',{
             params:{
-              ameOrCode:nameOrCode,
+              nameOrCode:nameOrCode,
               pageNo:pageNo,
               pageSize:10
             }
@@ -399,7 +397,7 @@
           this.loadingStatus = true
           this.$axios.get('/api/user-role-manage/dormitory-admin',{
             params:{
-              ameOrCode:nameOrCode,
+              nameOrCode:nameOrCode,
               pageNo:pageNo,
               pageSize:10
             }
@@ -429,7 +427,7 @@
           this.loadingStatus = true
           this.$axios.get('/api/user-role-manage/student-office-admin',{
             params:{
-              ameOrCode:nameOrCode,
+              nameOrCode:nameOrCode,
               pageNo:pageNo,
               pageSize:10
             }
@@ -471,8 +469,21 @@
         /*根据机构查所属教职工*/
         getOrgStaff:function(orgId){
           const _this = this
-          this.$axios.get('/api/user-role-manage/org/'+orgId+'/staff').then(function (res) {
+          this.$axios.get('/api/user-role-manage/org/'+orgId+'/staff',{
+            params:{
+              pageSize:1000
+            }
+          }).then(function (res) {
             if(res){
+              let lisData = []
+              res.data.data.result.forEach(function (item) {
+                let format = {}
+                format.key = item.userId
+                format.label = item.name
+                format.code = item.code
+                lisData.push(format)
+              })
+              _this.orgIdStaffListData = lisData
               _this.orgIdStaffListData = res.data.data.result
             }
           }).catch(function (error) {
@@ -591,7 +602,7 @@
         /*树形节点点击查询*/
         treeHandleNodeClick:function (data) {
           if(data.orgId!==''){
-            this.getOrgStaff(`${data.orgId}`)
+            this.getOrgStaff(data.orgId)
           }
         },
         /*学生处管理员*/
@@ -674,6 +685,10 @@
               })
             })
           }
+        },
+        /**/
+        getRightList:function(data){
+          this.rightListData = data
         },
         /*上一步控制*/
         stepFun:function(){
