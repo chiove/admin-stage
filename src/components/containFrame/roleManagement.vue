@@ -686,7 +686,7 @@
             })
           }
         },
-        /**/
+        /*获取右边选择数据*/
         getRightList:function(data){
           this.rightListData = data
         },

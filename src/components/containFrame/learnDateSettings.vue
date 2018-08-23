@@ -13,10 +13,10 @@
     </div>
     <div class="body-content">
       <div class="body-content-title">学期设置</div>
-      <div class="learn-date-container">
+      <div class="learn-date-container" v-for="(item,index) in listData" v-bind:key="index">
         <div class="learn-date-title">
           <i class="el-icon-time"></i>
-          <span>2018-2019学年</span>
+          <span>{{item.startYear}}-{{item.endYear}}学年</span>
         </div>
         <div class="learn-date-title-little">
           <i class="el-icon-bell"></i>
@@ -25,11 +25,11 @@
         <div class="learn-date-title-lv3">
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon"></div>
-            <div>开始日期 2018-05-01</div>
+            <div>开始日期 {{item.termNumberOne.startDate}}</div>
           </div>
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon1"></div>
-            <div>结束日期 2018-05-01</div>
+            <div>结束日期 {{item.termNumberOne.endDate}}</div>
           </div>
         </div>
         <div class="learn-date-title-little">
@@ -39,31 +39,11 @@
         <div class="learn-date-title-lv3">
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon"></div>
-            <div>开始日期 2018-05-01</div>
+            <div>开始日期 {{item.termNumberTwo.startDate}}</div>
           </div>
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon1"></div>
-            <div>结束日期 2018-05-01</div>
-          </div>
-        </div>
-      </div>
-      <div class="learn-date-container">
-        <div class="learn-date-title">
-          <i class="el-icon-time"></i>
-          <span>2018-2019学年</span>
-        </div>
-        <div class="learn-date-title-little">
-          <i class="el-icon-bell"></i>
-          <span>第一学期</span>
-        </div>
-        <div class="learn-date-title-lv3">
-          <div class="learn-date-title-lv3-text">
-            <div class="learn-date-title-lv3-icon"></div>
-            <div>开始日期 2018-05-01</div>
-          </div>
-          <div class="learn-date-title-lv3-text">
-            <div class="learn-date-title-lv3-icon1"></div>
-            <div>结束日期 2018-05-01</div>
+            <div>结束日期 {{item.termNumberTwo.endDate}}</div>
           </div>
         </div>
       </div>
@@ -139,15 +119,15 @@
             },
             listData:[
               {
-                startYear:'',
-                endYear:'',
+                startYear:'2017',
+                endYear:'2018',
                 termNumberOne:{
-                  startDate: '',
-                  endDate: '',
+                  startDate: '2017-02-01',
+                  endDate: '2017-06-01',
                 },
                 termNumberTwo:{
-                  startDate: '',
-                  endDate: '',
+                  startDate: '2017-09-01',
+                  endDate: '2018-02-01',
                 }
               },
             ],
@@ -185,7 +165,17 @@
         getStudyDate(){
           this.$axios.get('/api/term').then(function (res) {
             if(res){
-
+                let listData = {}
+                const _this = this
+                res.data.data.forEach(function (item,index) {
+                  listData.startYear = item.startYear
+                  listData.endYear = item.endYear
+                  listData.termNumberOne.startDate = item.termOneStartDate
+                  listData.termNumberOne.endDate = item.termOneEndDate
+                  listData.termNumberTwo.startDate = item.termTwoStartDate
+                  listData.termNumberTwo.endDate = item.termTwoEndDat
+                  _this.listData.push(listData)
+                })
             }
           }).catch(function (error) {
             console.log(error)
@@ -197,7 +187,9 @@
           this.$axios.put('/api/term',{
             "endDate": _this.ruleForm.endDate,
             "startDate":  _this.ruleForm.startDate,
-            "termNumber":  _this.ruleForm.termNumber
+            "termNumber":  _this.ruleForm.termNumber,
+            "startYear": _this.ruleForm.startYear,
+            "endYear": _this.ruleForm.endYear
           }).then(function (res) {
             if(res){
               if(res.data.code ==='000000'){
