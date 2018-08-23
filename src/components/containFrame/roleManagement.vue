@@ -73,7 +73,7 @@
               </el-form>
             </div>
           </div>
-          <el-table :data="instructorListData" v-loading="loadingStatus" style="width: 100%">
+          <el-table :data="instructorListData" v-loading="loadingStatus" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column prop="code" label="工号"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="collegeName" label="所属学院"></el-table-column>
@@ -107,11 +107,11 @@
               </el-form>
             </div>
             <div>
-              <el-button type="primary" size="mini">删除用户</el-button>
+              <el-button type="primary" size="mini" @click="deleteUser">删除用户</el-button>
               <el-button type="primary" size="mini" @click="addUserFun">添加用户</el-button>
             </div>
           </div>
-          <el-table :data="collegerListData" v-loading="loadingStatus" style="width: 100%">
+          <el-table :data="collegerListData" v-loading="loadingStatus" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="code" label="工号"></el-table-column>
@@ -145,11 +145,11 @@
               </el-form>
             </div>
             <div>
-              <el-button type="primary" size="mini">删除用户</el-button>
+              <el-button type="primary" size="mini" @click="deleteUser">删除用户</el-button>
               <el-button type="primary" size="mini" @click="addUserFun">添加用户</el-button>
             </div>
           </div>
-          <el-table :data="roomerListData" v-loading="loadingStatus" style="width: 100%">
+          <el-table :data="roomerListData" v-loading="loadingStatus" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="code" label="工号"></el-table-column>
@@ -183,11 +183,11 @@
               </el-form>
             </div>
             <div>
-              <el-button type="primary" size="mini">删除用户</el-button>
+              <el-button type="primary" size="mini" @click="deleteUser">删除用户</el-button>
               <el-button type="primary" size="mini" @click="addUserFun">添加用户</el-button>
             </div>
           </div>
-          <el-table :data="studentleaderListData" v-loading="loadingStatus" style="width: 100%">
+          <el-table :data="studentleaderListData" v-loading="loadingStatus" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="code" label="工号"></el-table-column>
@@ -209,7 +209,7 @@
     <el-dialog
       title="添加用户"
       :visible.sync="addUserStatus"
-      width="40%">
+      width="50%">
       <div class="add-user-container">
         <div class="add-user-tree-container">
           <el-tree :data="treeListData" :props="defaultProps" @node-click="treeHandleNodeClick"></el-tree>
@@ -217,7 +217,6 @@
          <div class="add-user-teansfer-container">
            <el-transfer
              filterable
-             width="70%"
              :titles="['未选择用户', '一选择用户']"
              :button-texts="['到左边', '到右边']"
              filter-placeholder="搜索工号"
@@ -239,14 +238,19 @@
       width="40%">
       <div class="add-user-container">
         <div class="add-user-tree-container">
-          <!--<el-tree :data="" :props="" @node-click=""></el-tree>-->
+            <div>已选用户</div>
+            <el-tree :data="rightListData" @node-click="treeClickCollegeFun"></el-tree>
         </div>
         <div class="add-user-teansfer-container">
-
+          <div>可选范围</div>
+          <el-checkbox-group v-model="checkList" @change="checkTrueValueFun">
+            <el-checkbox v-for="(item,index) in collegeOrBuildListData" :value="item.key" v-bind:key="index" :label="item.label"></el-checkbox>
+          </el-checkbox-group>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="stepFun" size="mini">返 回</el-button>
+        <el-button type="primary"  size="mini" @click="nextAddUserStatus = false">关闭</el-button>
         <el-button type="primary"  size="mini" @click="saveDataFun">保存</el-button>
       </span>
     </el-dialog>
@@ -298,6 +302,12 @@
           orgIdStaffListData:[],/*根据机构id查询的教职工列表*/
           orgIdStaffListDataValue:[],/*穿梭框默认值*/
           rightListData:[],/*右侧数据列表*/
+          checkList:[],/*选矿model*/
+          collegeOrBuildListData:[],/*根据用户ID获取到学院列表or楼栋列表*/
+          collegeOrBuildCheckList:[],/*学院or楼栋选中列表*/
+          userId:'',/*下一步树点击获取用户ID*/
+          collegeRefList:[],/*学院提交格式*/
+           buildRefList:[],/*楼栋提交格式*/
         }
       },
       methods: {
@@ -484,7 +494,6 @@
                 lisData.push(format)
               })
               _this.orgIdStaffListData = lisData
-              _this.orgIdStaffListData = res.data.data.result
             }
           }).catch(function (error) {
             _this.$notify.error({
@@ -557,7 +566,7 @@
             })
             this.$axios.delete('/api/user-role-manage/student-phone',{
               params:{
-                "studentIds":`[${studentsIds}]`
+                "studentIds": studentsIds
               }
             }).then(function (res) {
               if(res){
@@ -606,10 +615,14 @@
           }
         },
         /*学生处管理员*/
-        studentsLeadersaveDataFun:function(staffIdList){
+        studentsLeadersaveDataFun:function(){
           const _this = this
+          let staffIdList = []
+          this.rightListData.forEach(function (item,index) {
+            staffIdList.push(item.key)
+          })
           this.$axios.post('/api/student-office-admin',{
-            staffIdList:staffIdList
+            'staffIdList':staffIdList
           }).then(function (res) {
             if(res){
               if(res.data.code ==='000000') {
@@ -619,6 +632,8 @@
                   position: 'bottom-right',
                   type: 'success'
                 })
+                const param = _this.form.name
+                this.getStudentleaderListData(param)
               }
             }
           }).catch(function (error) {
@@ -632,21 +647,25 @@
         saveDataFun:function () {
           const _this = this
           if(this.activeName ==='third'){
+            const format = {}
+            const params = []
+            this.collegeOrBuildCheckList.forEach(function (item,index) {
+              format["collegeName"] = item.label
+              format["collegeId"] = item.key
+              params.push(format)
+            })
+            this.collegeRefList.push({
+              "orgIdList": params,
+              "userId": this.userId
+            })
             this.$axios.post('/api/secondary-college-admin',{
-              "refList": [
-                {
-                  "orgIdList": [
-                    0
-                  ],
-                  "userId": 0
-                }
-              ]
+              "refList": _this.collegeRefList
             }).then(function (res) {
               if(res){
                 if(res.data.code ==='000000') {
                   this.nextAddUserStatus = false
                   _this.$notify({
-                    message: '设置成功',
+                    message: '保存成功',
                     position: 'bottom-right',
                     type: 'success'
                   })
@@ -659,20 +678,24 @@
               })
             })
           }else if(this.activeName ==='fourth'){
+            const format = {}
+            const params = []
+            this.collegeOrBuildCheckList.forEach(function (item,index) {
+              format["buildingName"] = item.label
+              format["buildingId"] = item.key
+              params.push(format)
+            })
+            this.buildRefList.push({
+              "buildingId": params,
+              "userId": this.userId
+            })
             this.$axios.post('/api/dormitory-admin',{
-              "refList": [
-                {
-                  "buildingId": [
-                    0
-                  ],
-                  "userId": 0
-                }
-              ]
+              "refList": _this.buildRefList
             }).then(function (res) {
               if(res){
                 if(res.data.code ==='000000') {
                   _this.$notify({
-                    message: '设置成功',
+                    message: '保存成功',
                     position: 'bottom-right',
                     type: 'success'
                   })
@@ -688,7 +711,13 @@
         },
         /*获取右边选择数据*/
         getRightList:function(data){
-          this.rightListData = data
+          let params = []
+          this.orgIdStaffListData.forEach(function (leftItem,index) {
+            if(data.indexOf(leftItem.key)>0){
+              params.push(leftItem)
+            }
+          })
+          this.rightListData = params
         },
         /*上一步控制*/
         stepFun:function(){
@@ -699,6 +728,106 @@
         nextFun:function () {
           this.addUserStatus=false
           this.nextAddUserStatus=true
+        },
+        /*下一步树点击事件*/
+        treeClickCollegeFun:function(data){
+          const _this = this
+          this.userId = data.key
+          if(this.activeName ==='third'){
+            /*查询学院*/
+            this.$axios.get('/api/select-data/secondary-college/query-by-user',{
+              params:{
+                userId:data.key
+              }
+            }).then(function (res) {
+              if(res){
+                const format = {}
+                _this.collegeOrBuildListData = []
+                res.data.data.forEach(function (item,index) {
+                  format.label = item.collegeName
+                  format.key = item.collegeId
+                  _this.collegeOrBuildListData.push(format)
+                })
+              }
+            }).catch(function (error) {
+              console.log(error)
+            })
+          }else if(this.activeName ==='fourth'){
+           /*查询楼栋*/
+            this.$axios.get('/select-data/dormitory-building/all').then(function (res) {
+              if(res){
+                const format = {}
+                _this.collegeOrBuildListData = []
+                res.data.data.forEach(function (item,index) {
+                   format.label = item.buildingName
+                    format.key = item.buildingId
+                  _this.collegeOrBuildListData.push(format)
+                })
+              }
+            }).catch(function (error) {
+              console.log(error)
+            })
+          }
+        },
+        /*删除用户*/
+        deleteUser:function () {
+          let roletype = 0
+          if (this.activeName ==='third'){
+            roletype = 1
+          }else if(this.activeName ==='fourth'){
+            roletype = 2
+          }else if(this.activeName ==='fifth'){
+            roletype = 3
+          }
+          if(this.multipleSelection.length>0){
+            const _this = this
+            const userIds = []
+            this.multipleSelection.forEach(function (item,index) {
+              userIds.push(item.userId)
+            })
+              this.$axios.put('/api/user-role-manage/delete-account',{
+                "roleType": roletype,
+                "userIds": userIds
+              }).then(function (res) {
+                if(res){
+                  if(res.data.code ==='000000'){
+                    _this.$notify({
+                      message: '删除成功',
+                      position: 'bottom-right',
+                      type: 'success'
+                    })
+                    const param = _this.form.name
+                    if(_this.activeName ==='third'){
+                      this.getCollegerListData(param)
+                    }else if(_this.activeName ==='fourth'){
+                      this.getRoomerListData(param)
+                    }else if(_this.activeName ==='fifth'){
+                      this.getStudentleaderListData(param)
+                    }
+                  }
+                }
+              }).catch(function (error) {
+                _this.$notify.error({
+                  message: error,
+                  position: 'bottom-right',
+                });
+              })
+          }else{
+            this.$notify.error({
+              message: '至少选择一条',
+              position: 'bottom-right'
+            });
+          }
+        },
+        /*获取选中的值*/
+        checkTrueValueFun:function (data) {
+          const params = []
+          this.collegeOrBuildListData.forEach(function (item,index) {
+            if(data.indexOf(item.label>0)){
+              params.push(item.key)
+            }
+          })
+          this.collegeOrBuildCheckList = params
         }
       }
     }

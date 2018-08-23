@@ -66,12 +66,12 @@
     <div class="students-details-table">
       <div class="students-details-table-title">历史数据</div>
       <div class="students-details-table-tab">
-        <div class="students-details-table-tab-search">
+        <div class="students-details-table-tab-search" v-if="dateShowOrHidden">
            <span class="tool-bar-search-babel">
               范围选择
             </span>
           <el-date-picker
-            v-model="value"
+            v-model="dateValue"
             type="month"
             size="mini"
             placeholder="选择月">
@@ -111,7 +111,8 @@
         historyClockListData:[],/*历史打卡数据*/
         loadingStatus:false,/*加载显示*/
         activeName: 'first',
-        value:''
+        dateValue:''/*月份值*/,
+        dateShowOrHidden:false,/*是否显示搜索*/
       };
     },
     methods: {
@@ -121,9 +122,13 @@
       },
       /*tab切换触发事件*/
       handleClick(tab, event) {
-        console.log(tab)
         if(tab.name==='first'){
+          this.dateShowOrHidden = false
           this.getAlCareListData()
+        }else if(tab.name==='second'){
+          this.dateShowOrHidden = true
+        }else if(tab.name==='third'){
+          this.dateShowOrHidden = true
         }
       },
       /*获取已关怀列表*/
