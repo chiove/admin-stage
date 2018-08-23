@@ -66,7 +66,14 @@
                 <span>设置打卡范围：打卡地点默认为中心点{{circles[0].radius}}m范围内</span>
                 <div class="clock-in-settings-address-delete">
                   <span class="scope-label">范围设置：</span>
-                  <el-input  size="mini" v-model="ruleForm.scope" placeholder="设置范围" class="clock-in-settings-address-delete-span"></el-input>
+                  <el-select v-model="ruleForm.scope" size="mini" class="clock-in-settings-address-delete-span" placeholder="设置范围">
+                    <el-option
+                      v-for="item in scopeOption"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
                   <el-button size="mini"  type="primary" @click="addNewClock">新增打卡地点</el-button>
                 </div>
               </div>
@@ -105,6 +112,7 @@
       name: "ClockInSettings",
       mounted:function(){
         this.getSystemListData()
+        this.ruleForm.clockStartTime = '12:00:25'
       },
       data(){
         const self = this;
@@ -179,6 +187,12 @@
             checkDevice:'1',/*是否检查设备*/
             scope:50,/*设置打卡范围*/
           },
+          scopeOption:[
+            {value:50, label:'50米'},
+            {value:100, label:'200米'},
+            {value:200, label:'100米'},
+            {value:500, label:'500米'},
+          ],
           addressReqDTOList:[],/*地图数据*/
           rules: {
             clockStartTime: [
@@ -258,9 +272,15 @@
                _this.ruleForm.checkDormkEndTime = res.data.data.checkClockEndTime
                _this.ruleForm.clockEndTime = res.data.data.clockEndTime
                _this.ruleForm.clockStartTime = res.data.data.clockStartTime
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+          this.$axios.get('/api/clock-day-list-from-curr').then(function (res) {
+            if(res){
+              console.log(res)
               _this.ruleForm.clockRepeatTime = res.data.data.dayList
             }
-            console.log(_this.ruleForm)
           }).catch(function (error) {
             console.log(error)
           })

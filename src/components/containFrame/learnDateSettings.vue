@@ -8,7 +8,7 @@
         <span class="active-router">&gt; 学期设置</span>
       </div>
       <div>
-        <el-button type="primary" size="mini">添加学期</el-button>
+        <el-button type="primary" size="mini" @click="addNewDateFun">添加学期</el-button>
       </div>
     </div>
     <div class="body-content">
@@ -32,6 +32,20 @@
             <div>结束日期 2018-05-01</div>
           </div>
         </div>
+        <div class="learn-date-title-little">
+          <i class="el-icon-bell"></i>
+          <span>第二学期</span>
+        </div>
+        <div class="learn-date-title-lv3">
+          <div class="learn-date-title-lv3-text">
+            <div class="learn-date-title-lv3-icon"></div>
+            <div>开始日期 2018-05-01</div>
+          </div>
+          <div class="learn-date-title-lv3-text">
+            <div class="learn-date-title-lv3-icon1"></div>
+            <div>结束日期 2018-05-01</div>
+          </div>
+        </div>
       </div>
       <div class="learn-date-container">
         <div class="learn-date-title">
@@ -54,12 +68,151 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="学期设置"
+      :visible.sync="dialogVisible"
+      width="30%"
+      >
+      <div>
+        <div>
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+              <el-form-item label="学年选择" prop="year">
+                <div class="form-list-container">
+                  <el-date-picker
+                    v-model="ruleForm.startYear"
+                    type="year"
+                    size="mini"
+                    placeholder="选择开始日期">
+                  </el-date-picker>
+                  <el-date-picker
+                    v-model="ruleForm.endYear"
+                    type="year"
+                    size="mini"
+                    placeholder="选择结束日期">
+                  </el-date-picker>
+                </div>
+              </el-form-item>
+              <el-form-item label="学期选择" prop="termNumber">
+                <el-select v-model="ruleForm.termNumber" size="mini" placeholder="请选择活动区域">
+                  <el-option label="第一学期" value="1"></el-option>
+                  <el-option label="第二学期" value="2"></el-option>
+                </el-select>
+              </el-form-item>
+            <el-form-item label="开始日期" prop="startDate">
+              <el-date-picker
+                v-model="ruleForm.startDate"
+                type="date"
+                size="mini"
+                placeholder="选择开始日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="结束日期" prop="endDate">
+              <el-date-picker
+                v-model="ruleForm.endDate"
+                type="date"
+                size="mini"
+                placeholder="选择结束日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false" size="mini">取 消</el-button>
+            <el-button type="primary" @click="addNewDateConfirmFun" size="mini">确 定</el-button>
+        </span>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
     export default {
-        name: "learnDateSettings"
+      name: "learnDateSettings",
+      data(){
+          return {
+            ruleForm:{
+              termNumber: '',/*学期*/
+              startDate: '',/*开始时间*/
+              endDate: '',/*结束时间*/
+              startYear:'',/*开始学年*/
+              endYear:''/*结束学年*/
+            },
+            listData:[
+              {
+                startYear:'',
+                endYear:'',
+                termNumberOne:{
+                  startDate: '',
+                  endDate: '',
+                },
+                termNumberTwo:{
+                  startDate: '',
+                  endDate: '',
+                }
+              },
+            ],
+            rules: {
+              startYear: [
+                { required: true, message: '请选择日期', trigger: 'blur' },
+              ],
+              endYear: [
+                { required: true, message: '请选择日期', trigger: 'blur' },
+              ],
+              termNumber: [
+                { required: true, message: '请选择学期', trigger: 'blur' },
+              ],
+              startDate: [
+                { required: true, message: '请选择日期', trigger: 'blur' },
+              ],
+              endDate: [
+                { required: true, message: '请选择日期', trigger: 'blur' },
+              ],
+            },
+            dialogVisible:false,/*添加学期弹窗*/
+          }
+      },
+      methods:{
+        /*添加学期*/
+        addNewDateFun(){
+          this.dialogVisible = true
+        },
+        /*添加学期确定*/
+        addNewDateConfirmFun(){
+          this.dialogVisible = false
+          this.addStudyDate()
+        },
+        /*获取学期日期*/
+        getStudyDate(){
+          this.$axios.get('/api/term').then(function (res) {
+            if(res){
+
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+        },
+        /*添加新学期*/
+        addStudyDate(){
+          const _this = this
+          this.$axios.put('/api/term',{
+            "endDate": _this.ruleForm.endDate,
+            "startDate":  _this.ruleForm.startDate,
+            "termNumber":  _this.ruleForm.termNumber
+          }).then(function (res) {
+            if(res){
+              if(res.data.code ==='000000'){
+                _this.$notify({
+                  message: '设置成功',
+                  position: 'bottom-right',
+                  type: 'success'
+                })
+              }
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+        }
+      }
     }
 </script>
 
@@ -108,5 +261,15 @@
   }
   .el-icon-bell{
     color:rgba(33,132,197,1);
+  }
+  .form-list-container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .dialog-footer{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
   }
 </style>
