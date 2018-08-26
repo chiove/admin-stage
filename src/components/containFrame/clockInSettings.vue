@@ -220,13 +220,13 @@
             if (valid) {
               const _this = this
               this.$axios.put('/api/system-config',{
-                "addressReqDTOList": _this.addressReqDTOList,
-                "checkDevice": _this.ruleForm.checkDevice,
-                "checkDormStartTime": _this.ruleForm.checkDormStartTime,
-                "checkDormkEndTime": _this.ruleForm.checkDormkEndTime,
-                "clockEndTime": _this.ruleForm.clockEndTime,
-                "clockStartTime": _this.ruleForm.clockStartTime,
-                "dayList":_this.ruleForm.clockRepeatTime,
+                addressReqDTOList: _this.addressReqDTOList,
+                checkDevice: _this.ruleForm.checkDevice,
+                checkDormStartTime: _this.ruleForm.checkDormStartTime,
+                checkDormkEndTime: _this.ruleForm.checkDormkEndTime,
+                clockEndTime: _this.ruleForm.clockEndTime,
+                clockStartTime: _this.ruleForm.clockStartTime,
+                dayList:_this.ruleForm.clockRepeatTime,
               }).then(function (res) {
                 if(res){
                   if(res.data.code ==='000000'){

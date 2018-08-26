@@ -564,10 +564,10 @@
             this.multipleSelection.forEach(function (item,index) {
               studentsIds.push(item.studentId)
             })
-            this.$axios.delete('/api/user-role-manage/student-phone',{
-              params:{
-                "studentIds": studentsIds
-              }
+            this.$axios.delete('/api/user-role-manage/student-phone', {
+            data:{
+               "studentIds":studentsIds
+             }
             }).then(function (res) {
               if(res){
                 if(res.data.code ==='000000'){
@@ -577,6 +577,7 @@
                     type: 'success'
                   });
                 }
+                _this.getStudentsListData()
               }
             }).catch(function (error) {
               _this.$notify.error({
