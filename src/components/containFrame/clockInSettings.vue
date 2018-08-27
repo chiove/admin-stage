@@ -22,6 +22,7 @@
             </el-form-item>
             <el-form-item prop="clockEndTime">
               <el-time-picker
+                ref="clockEndTimeDom"
                 v-model="ruleForm.clockEndTime"
                 size="mini"
                 placeholder="打卡结束时间">
@@ -31,6 +32,7 @@
           <div class="check-room-time-container">
             <el-form-item label="查寝开始时间" prop="checkDormStartTime">
               <el-time-picker
+                ref="checkDormStartTimeDom"
                 v-model="ruleForm.checkDormStartTime"
                 size="mini"
                 placeholder="选择时间">
@@ -38,6 +40,7 @@
             </el-form-item>
             <el-form-item label="次日截止时间" prop="checkDormkEndTime">
               <el-time-picker
+                ref="checkDormkEndTimeDom"
                 v-model="ruleForm.checkDormkEndTime"
                 size="mini"
                 placeholder="选择时间">
@@ -46,6 +49,7 @@
           </div>
           <el-form-item label="范围选择">
             <el-date-picker
+              ref="clockRepeatTimeDom"
               type="dates"
               size="mini"
               v-model="ruleForm.clockRepeatTime"
@@ -218,15 +222,35 @@
         submitForm(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
+              if(this.ruleForm.clockRepeatTime){
+                const dayList = []
+                this.ruleForm.clockRepeatTime.forEach(function (item,index) {
+                  let month = '',day = ''
+                  if(item.getMonth()+1<10){
+                    month = `0${item.getMonth()+1}`
+                  }else{
+                    month = item.getMonth()+1
+                  }
+                  if(item.getDay()<10){
+                    day = `0${item.getDay()}`
+                  }else{
+                    day = item.getDay()
+                  }
+                  dayList.push( `${item.getFullYear()}${month}${day}`)
+                })
+              }
               const _this = this
               this.$axios.put('/api/system-config',{
-                addressReqDTOList: _this.addressReqDTOList,
-                checkDevice: _this.ruleForm.checkDevice,
-                checkDormStartTime: _this.ruleForm.checkDormStartTime,
-                checkDormkEndTime: _this.ruleForm.checkDormkEndTime,
-                clockEndTime: _this.ruleForm.clockEndTime,
-                clockStartTime: _this.ruleForm.clockStartTime,
-                dayList:_this.ruleForm.clockRepeatTime,
+                  headers:{
+                    'Content-Type':'x-www-form-urlencoded'
+                  },
+                  "addressReqDTOList": _this.addressReqDTOList,
+                  "checkDevice": _this.ruleForm.checkDevice,
+                  "checkDormStartTime": `${_this.ruleForm.checkDormStartTime.getHours()}:${_this.ruleForm.checkDormStartTime.getMinutes()}:${_this.ruleForm.checkDormStartTime.getSeconds()}`,
+                  "checkDormEndTime": `${_this.ruleForm.checkDormkEndTime.getHours()}:${_this.ruleForm.checkDormkEndTime.getMinutes()}:${_this.ruleForm.checkDormkEndTime.getSeconds()}`,
+                  "clockEndTime": `${_this.ruleForm.clockEndTime.getHours()}:${_this.ruleForm.clockEndTime.getMinutes()}:${_this.ruleForm.clockEndTime.getSeconds()}`,
+                  "clockStartTime": `${_this.ruleForm.clockStartTime.getHours()}:${_this.ruleForm.clockStartTime.getMinutes()}:${_this.ruleForm.clockStartTime.getSeconds()}`,
+                  "dayList":dayList,
               }).then(function (res) {
                 if(res){
                   if(res.data.code ==='000000'){
