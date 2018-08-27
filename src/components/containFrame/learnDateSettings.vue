@@ -62,6 +62,7 @@
                     v-model="ruleForm.startYear"
                     type="year"
                     size="mini"
+                    style="margin-right: .2rem"
                     placeholder="选择开始日期">
                   </el-date-picker>
                   <el-date-picker
@@ -73,13 +74,14 @@
                 </div>
               </el-form-item>
               <el-form-item label="学期选择" prop="termNumber">
-                <el-select v-model="ruleForm.termNumber" size="mini" placeholder="请选择活动区域">
+                <el-select v-model="ruleForm.termNumber" style="width: 2.08rem" size="mini" placeholder="请选择活动区域">
                   <el-option label="第一学期" value="1"></el-option>
                   <el-option label="第二学期" value="2"></el-option>
                 </el-select>
               </el-form-item>
             <el-form-item label="开始日期" prop="startDate">
               <el-date-picker
+                style="width: 2.08rem"
                 v-model="ruleForm.startDate"
                 type="date"
                 size="mini"
@@ -88,6 +90,7 @@
             </el-form-item>
             <el-form-item label="结束日期" prop="endDate">
               <el-date-picker
+                style="width: 2.08rem"
                 v-model="ruleForm.endDate"
                 type="date"
                 size="mini"
@@ -108,6 +111,9 @@
 <script>
     export default {
       name: "learnDateSettings",
+      mounted:function(){
+        this.getStudyDate()
+      },
       data(){
           return {
             ruleForm:{
@@ -118,18 +124,6 @@
               endYear:''/*结束学年*/
             },
             listData:[
-              {
-                startYear:'2017',
-                endYear:'2018',
-                termNumberOne:{
-                  startDate: '2017-02-01',
-                  endDate: '2017-06-01',
-                },
-                termNumberTwo:{
-                  startDate: '2017-09-01',
-                  endDate: '2018-02-01',
-                }
-              },
             ],
             rules: {
               startYear: [
@@ -158,52 +152,69 @@
         },
         /*添加学期确定*/
         addNewDateConfirmFun(){
-          this.dialogVisible = false
-          this.addStudyDate()
+          const _this = this
+          if(_this.ruleForm.endDate&&_this.ruleForm.endYear&&_this.ruleForm.startDate&&_this.ruleForm.startYear&&_this.ruleForm.termNumber){
+            this.$axios.post('/api/term',{
+              "endDate":  `${_this.ruleForm.endDate.getFullYear()}-${_this.ruleForm.endDate.getMonth()+1}-${_this.ruleForm.endDate.getDay()}`,
+              "endYear": _this.ruleForm.endYear.getFullYear(),
+              "startDate": `${_this.ruleForm.startDate.getFullYear()}-${_this.ruleForm.startDate.getMonth()+1}-${_this.ruleForm.startDate.getDay()}`,
+              "startYear": _this.ruleForm.startYear.getFullYear(),
+              "termNumber": _this.ruleForm.termNumber
+            }).then(function (res) {
+              if(res){
+                if(res.data.code==='000000'){
+                  _this.dialogVisible = false
+                  _this.$notify({
+                    title:'提示',
+                    message:'添加成功',
+                    position:'bottom-right',
+                    type:'success'
+                  })
+                }else{
+                  _this.$notify({
+                    title:'提示',
+                    message:res.data.message,
+                    position:'bottom-right',
+                    type:'warning'
+                  })
+                }
+              }
+            }).catch(function (error) {
+              console.log(error)
+            })
+          }else{
+            _this.$notify({
+              title:'提示',
+              message:'请填写完整',
+              position:'bottom-right',
+              type:'warning'
+            })
+          }
         },
         /*获取学期日期*/
         getStudyDate(){
+          const _this = this
           this.$axios.get('/api/term').then(function (res) {
             if(res){
-                let listData = {}
-                const _this = this
                 res.data.data.forEach(function (item,index) {
-                  listData.startYear = item.startYear
-                  listData.endYear = item.endYear
-                  listData.termNumberOne.startDate = item.termOneStartDate
-                  listData.termNumberOne.endDate = item.termOneEndDate
-                  listData.termNumberTwo.startDate = item.termTwoStartDate
-                  listData.termNumberTwo.endDate = item.termTwoEndDat
-                  _this.listData.push(listData)
+                  _this.listData.push({
+                    startYear:item.startYear,
+                    endYear:item.endYear,
+                    termNumberOne:{
+                      startDate: item.termOneStartDate,
+                      endDate: item.termOneEndDate
+                    },
+                    termNumberTwo:{
+                      startDate:item.termTwoStartDate,
+                      endDate: item.termTwoEndDat,
+                    }
+                  })
                 })
             }
           }).catch(function (error) {
             console.log(error)
           })
         },
-        /*添加新学期*/
-        addStudyDate(){
-          const _this = this
-          this.$axios.put('/api/term',{
-            "endDate": _this.ruleForm.endDate,
-            "startDate":  _this.ruleForm.startDate,
-            "termNumber":  _this.ruleForm.termNumber,
-            "startYear": _this.ruleForm.startYear,
-            "endYear": _this.ruleForm.endYear
-          }).then(function (res) {
-            if(res){
-              if(res.data.code ==='000000'){
-                _this.$notify({
-                  message: '设置成功',
-                  position: 'bottom-right',
-                  type: 'success'
-                })
-              }
-            }
-          }).catch(function (error) {
-            console.log(error)
-          })
-        }
       }
     }
 </script>
@@ -256,7 +267,7 @@
   }
   .form-list-container{
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
   }
   .dialog-footer{

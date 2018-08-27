@@ -209,7 +209,7 @@
     <el-dialog
       title="添加用户"
       :visible.sync="addUserStatus"
-      width="50%">
+      width=900px>
       <div class="add-user-container">
         <div class="add-user-tree-container">
           <el-tree :data="treeListData" :props="defaultProps" @node-click="treeHandleNodeClick"></el-tree>
@@ -235,7 +235,7 @@
     <el-dialog
       title="数据范围设置"
       :visible.sync="nextAddUserStatus"
-      width="40%">
+      width=900px>
       <div class="add-user-container">
         <div class="add-user-tree-container">
             <div>已选用户</div>
@@ -250,7 +250,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="stepFun" size="mini">返 回</el-button>
-        <el-button type="primary"  size="mini" @click="nextAddUserStatus = false">关闭</el-button>
+        <el-button size="mini" @click="nextAddUserStatus = false">关闭</el-button>
         <el-button type="primary"  size="mini" @click="saveDataFun">保存</el-button>
       </span>
     </el-dialog>
@@ -333,7 +333,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -363,7 +363,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -393,7 +393,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -423,7 +423,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -453,7 +453,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -471,7 +471,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -497,7 +497,7 @@
             }
           }).catch(function (error) {
             _this.$notify.error({
-              message: error,
+              message: "请求错误",
               position: 'bottom-right'
             });
           })
@@ -581,7 +581,7 @@
               }
             }).catch(function (error) {
               _this.$notify.error({
-                message: error,
+                message: "请求错误",
                 position: 'bottom-right'
               });
             })
@@ -595,6 +595,8 @@
         /*打开用户弹窗*/
         addUserFun:function () {
           this.addUserStatus = true
+          this.rightListData = []
+          this.orgIdStaffListData = []
           if(this.activeName ==='third'){
             this.getTreeListData()/*查询树*/
             this.nextDataType = true
@@ -627,33 +629,29 @@
           }).then(function (res) {
             if(res){
               if(res.data.code ==='000000') {
-                this.addUserStatus=false
+                _this.addUserStatus=false
                 _this.$notify({
                   message: '设置成功',
                   position: 'bottom-right',
                   type: 'success'
                 })
                 const param = _this.form.name
-                this.getStudentleaderListData(param)
+                _this.getStudentleaderListData(param)
               }
             }
           }).catch(function (error) {
-            _this.$notify.error({
-              message: error,
-              position: 'bottom-right'
-            });
+            console.log(error)
           })
         },
         /*二级学院管理员和宿舍管理员保存列表*/
         saveDataFun:function () {
           const _this = this
           if(this.activeName ==='third'){
-            const format = {}
             const params = []
             this.collegeOrBuildCheckList.forEach(function (item,index) {
-              format["collegeName"] = item.label
-              format["collegeId"] = item.key
-              params.push(format)
+              delete item.key
+              delete item.label
+              params.push(item)
             })
             this.collegeRefList.push({
               "orgIdList": params,
@@ -674,17 +672,16 @@
               }
             }).catch(function (error) {
               _this.$notify.error({
-                message: error,
+                message: "请求错误",
                 position: 'bottom-right'
               })
             })
           }else if(this.activeName ==='fourth'){
-            const format = {}
             const params = []
             this.collegeOrBuildCheckList.forEach(function (item,index) {
-              format["buildingName"] = item.label
-              format["buildingId"] = item.key
-              params.push(format)
+              delete item.key
+              delete item.label
+              params.push(item)
             })
             this.buildRefList.push({
               "buildingId": params,
@@ -704,7 +701,7 @@
               }
             }).catch(function (error) {
               _this.$notify.error({
-                message: error,
+                message: "请求错误",
                 position: 'bottom-right'
               })
             })
@@ -714,7 +711,7 @@
         getRightList:function(data){
           let params = []
           this.orgIdStaffListData.forEach(function (leftItem,index) {
-            if(data.indexOf(leftItem.key)>0){
+            if(data.indexOf(leftItem.key)!==-1){
               params.push(leftItem)
             }
           })
@@ -732,42 +729,11 @@
         },
         /*下一步树点击事件*/
         treeClickCollegeFun:function(data){
-          const _this = this
           this.userId = data.key
           if(this.activeName ==='third'){
-            /*查询学院*/
-            this.$axios.get('/api/select-data/secondary-college/query-by-user',{
-              params:{
-                userId:data.key
-              }
-            }).then(function (res) {
-              if(res){
-                const format = {}
-                _this.collegeOrBuildListData = []
-                res.data.data.forEach(function (item,index) {
-                  format.label = item.collegeName
-                  format.key = item.collegeId
-                  _this.collegeOrBuildListData.push(format)
-                })
-              }
-            }).catch(function (error) {
-              console.log(error)
-            })
+              this.getAllcollegeList()
           }else if(this.activeName ==='fourth'){
-           /*查询楼栋*/
-            this.$axios.get('/select-data/dormitory-building/all').then(function (res) {
-              if(res){
-                const format = {}
-                _this.collegeOrBuildListData = []
-                res.data.data.forEach(function (item,index) {
-                   format.label = item.buildingName
-                    format.key = item.buildingId
-                  _this.collegeOrBuildListData.push(format)
-                })
-              }
-            }).catch(function (error) {
-              console.log(error)
-            })
+              this.getAllbuilding()
           }
         },
         /*删除用户*/
@@ -809,7 +775,7 @@
                 }
               }).catch(function (error) {
                 _this.$notify.error({
-                  message: error,
+                  message: "请求错误",
                   position: 'bottom-right',
                 });
               })
@@ -824,11 +790,47 @@
         checkTrueValueFun:function (data) {
           const params = []
           this.collegeOrBuildListData.forEach(function (item,index) {
-            if(data.indexOf(item.label>0)){
-              params.push(item.key)
-            }
+            data.forEach(function (v,i) {
+              if(v===item.label){
+                params.push(item)
+              }
+            })
+
           })
           this.collegeOrBuildCheckList = params
+        },
+        /*查询学院*/
+        getAllcollegeList(){
+          const _this = this
+          this.collegeOrBuildListData = []
+          this.$axios.get('/api/select-data/secondary-college/all').then(function (res) {
+            if(res){
+              res.data.data.forEach(function (item,index) {
+                item.label = item.collegeName
+                item.key = item.collegeId
+                _this.collegeOrBuildListData.push(item)
+              })
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+        },
+        /*查询全部楼栋*/
+        getAllbuilding(){
+          const  _this = this
+          this.collegeOrBuildListData = []
+          this.$axios.get('/api/select-data/dormitory-building/all').then(function (res) {
+            if(res){
+              _this.collegeOrBuildListData = []
+              res.data.data.forEach(function (item,index) {
+                item.label = item.buildingName
+                item.key = item.buildingId
+                _this.collegeOrBuildListData.push(item)
+              })
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
         }
       }
     }

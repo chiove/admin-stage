@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="students-details-banner-content-data">
-          <div class="students-details-banner-content-data-item">
+          <div class="students-details-banner-content-data-item arrive-clock">
             <div class="students-details-banner-content-data-item-number">
               {{dataList.totalCared}}
             </div>
@@ -44,7 +44,7 @@
               被关怀次数
             </div>
           </div>
-          <div class="students-details-banner-content-data-item">
+          <div class="students-details-banner-content-data-item stay-out-clock">
             <div class="students-details-banner-content-data-item-number">
               {{dataList.totalStayOut}}
             </div>
@@ -52,7 +52,7 @@
               累计未归次数
             </div>
           </div>
-          <div class="students-details-banner-content-data-item">
+          <div class="students-details-banner-content-data-item stay-out-late-clock">
             <div class="students-details-banner-content-data-item-number">
               {{dataList.totalStayOutLate}}
             </div>
@@ -66,12 +66,13 @@
     <div class="students-details-table">
       <div class="students-details-table-title">历史数据</div>
       <div class="students-details-table-tab">
-        <div class="students-details-table-tab-search" v-if="dateShowOrHidden">
-           <span class="tool-bar-search-babel">
-              范围选择
-            </span>
+        <div class="students-details-table-tab-search" v-if="showDate">
+             <span class="tool-bar-search-babel">
+               范围选择
+             </span>
           <el-date-picker
-            v-model="dateValue"
+            @change="selectDateFun"
+            v-model="selectDate"
             type="month"
             size="mini"
             placeholder="选择月">
@@ -79,23 +80,111 @@
         </div>
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="关怀反馈数据" name="first">
-            <el-table :data="alCareListData"  v-loading="loadingStatus" style="width: 100%">
+            <el-table :data="careListData"  v-loading="loadingStatus" style="width: 100%">
               <el-table-column prop="taskDate" label="任务时间"></el-table-column>
               <el-table-column prop="dealDate" label="处理时间"></el-table-column>
               <el-table-column prop="remark" label="反馈结果"></el-table-column>
             </el-table>
+            <div class="daily-data-pagination-container">
+              <el-pagination
+                background
+                @current-change="handleCurrentChange"
+                :current-page.sync="carePageNo"
+                :page-size="10"
+                layout="prev, pager, next, jumper"
+                :total="carePageTotal">
+              </el-pagination>
+            </div>
           </el-tab-pane>
-          <el-tab-pane label="门禁打卡数据" name="second">门禁打卡数据</el-tab-pane>
-          <el-tab-pane label="历史打卡数据" name="third">历史打卡数据</el-tab-pane>
+          <el-tab-pane label="门禁打卡数据" name="second">
+            <el-table :data="doorListData"  v-loading="loadingStatus" style="width: 100%">
+              <el-table-column prop="lastUpdateTime" label="打卡时间"></el-table-column>
+              <el-table-column prop="operateAppName" label="打卡设备"></el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="历史打卡数据" name="third">
+            <el-table :data="historyListData"  v-loading="loadingStatus" style="width: 100%">
+              <el-table-column prop="lastUpdateTime" label="考勤日期"></el-table-column>
+              <el-table-column prop="operateAppName" label="操作应用"></el-table-column>
+              <el-table-column prop="operatorName" label="操作人"></el-table-column>
+              <el-table-column prop="clockStatus" label="考勤状态"></el-table-column>
+              <el-table-column
+                label="历史记录"
+                width="100">
+                <template slot-scope="scope">
+                  <el-button @click="historyDetailsFun(scope.row)" type="text" size="small">查看</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="操作"
+                width="100">
+                <template slot-scope="scope">
+                  <el-button @click="changeStatusFun(scope.row)" type="text" size="small">修改状态</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
+    <el-dialog
+        title="修改状态"
+        :visible.sync="changeStatus"
+        width="30%"
+      >
+      <div>
+        <el-form ref="form" :model="ruleForm" :rules="rules" label-width="80px">
+          <el-form-item label="考勤状态">
+            <el-select v-model="form.clockStatus" placeholder="请选择活动区域">
+              <el-option label="到勤" value="2"></el-option>
+              <el-option label="晚归" value="3"></el-option>
+              <el-option label="未归" value="4"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input type="textarea" placeholder="必填" v-model="form.remark"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="mini" @click="onSubmit">确认</el-button>
+            <el-button size="mini" @click="changeStatus=false">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+    <el-dialog
+      title="修改状态"
+      :visible.sync="historyDetails"
+      width="30%"
+    >
+      <div>
+        <el-table :data="historyListData"  v-loading="loadingStatus" style="width: 100%">
+          <el-table-column prop="lastUpdateTime" label="操作时间日期"></el-table-column>
+          <el-table-column prop="operateAppName" label="操作应用"></el-table-column>
+          <el-table-column prop="operatorName" label="操作人"></el-table-column>
+          <el-table-column prop="clockStatus" label="考勤状态"></el-table-column>
+          <el-table-column prop="remark" label="备注"></el-table-column>
+        </el-table>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   export default {
     name: "studentsDetails",
+    mounted:function(){
+      this.year = this.selectDate.getFullYear()
+      this.month = this.selectDate.getMonth()+1
+      this.getAlCareListData()
+    },
     activated:function(){
       if(this.$route.params){
         this.dataList = this.$route.params
@@ -106,14 +195,35 @@
       return {
         dataList:{},/*详情页数据*/
         studentId:1,/*学生ID*/
-        alCareListData:[],/*已关怀列表数据*/
         clockListData:[],/*门禁打卡数据*/
         historyClockListData:[],/*历史打卡数据*/
         loadingStatus:false,/*加载显示*/
         activeName: 'first',
-        dateValue:''/*月份值*/,
-        dateShowOrHidden:false,/*是否显示搜索*/
-      };
+        careListData:[],/*已关怀列表数据*/
+        carePageNo:1,/*已关怀当前页*/
+        carePageTotal:0,/*关怀总页数*/
+        doorListData:[],/*门禁数据*/
+        historyListData:[],/*历史打卡数据*/
+        selectDate:new Date(),
+        year:'',
+        month:'',
+        showDate:false,
+        changeStatus:false,
+        historyDetails:false,
+        form: {
+          clockStatus: '1',
+          remark: '',
+        },
+        rules: {
+          clockStatus: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+          ],
+          remark: [
+            { required: true, message: '请输入备注', trigger: 'blur' },
+            { min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur' }
+          ],
+        }
+      }
     },
     methods: {
       /*返回上一级路由*/
@@ -122,13 +232,16 @@
       },
       /*tab切换触发事件*/
       handleClick(tab, event) {
+        this.activeName = tab.name
         if(tab.name==='first'){
-          this.dateShowOrHidden = false
+          this.showDate = false
           this.getAlCareListData()
         }else if(tab.name==='second'){
-          this.dateShowOrHidden = true
+          this.showDate=true
+          this.getClockListData()
         }else if(tab.name==='third'){
-          this.dateShowOrHidden = true
+          this.showDate=true
+          this.getHistoryClockListData()
         }
       },
       /*获取已关怀列表*/
@@ -137,11 +250,15 @@
         const _this = this
         this.$axios.get('/api/care-student',{
           params:{
-            studentId:_this.studentId
+            studentId:_this.studentId,
+            pageNo:_this.carePageNo,
+            pageSize:10
           }
         }).then(function (res) {
           if(res){
-            _this.alCareListData = res.data.result
+            _this.careListData = res.data.result
+            _this.carePageNo =  res.data.pageNo
+            _this.carePageTotal = res.data.totalPages
           }
         }).catch(function (error) {
           console.log(error)
@@ -151,33 +268,77 @@
         }, 2000)
       },
       getClockListData:function () {
+        this.loadingStatus = true
         const _this = this
-        this.$axios.get('/api/care-student',{
+        this.$axios.get('/api/student-clock',{
           params:{
-            studentId:_this.studentId
+            studentId:_this.studentId,
+            month:_this.month,
+            year:_this.year
           }
         }).then(function (res) {
           if(res){
-            _this.alCareListData = res.data.result
+            _this.doorListData = res.data.result
           }
         }).catch(function (error) {
           console.log(error)
         })
+        setTimeout(() => {
+          this.loadingStatus = false
+        }, 2000)
       },
       getHistoryClockListData:function () {
+        this.loadingStatus = true
         const _this = this
-        this.$axios.get('/api/care-student',{
+        this.$axios.get('/api/student-clock',{
           params:{
-            studentId:_this.studentId
+            studentId:_this.studentId,
+            month:_this.month,
+            year:_this.year,
           }
         }).then(function (res) {
           if(res){
-            _this.alCareListData = res.data.result
+            _this.historyListData = res.data.result
           }
         }).catch(function (error) {
           console.log(error)
         })
+        setTimeout(() => {
+          this.loadingStatus = false
+        }, 2000)
       },
+      /*分页查询*/
+      handleCurrentChange(val) {
+        if(this.activeName ==='first'){
+            this.carePageNo = val
+            this.getAlCareListData()
+        }
+      },
+      /*时间选择查询*/
+      selectDateFun(data){
+        this.year = this.selectDate.getFullYear()
+        this.month = this.selectDate.getMonth()+1
+        if(this.activeName ==='first'){
+          this.getAlCareListData()
+        }else if(this.activeName ==='second'){
+          this.getClockListData()
+        }else if(this.activeName ==='third'){
+          this.getHistoryClockListData()
+        }
+      },
+      historyDetailsFun(data){
+        if(data){
+          this.historyDetails = true
+        }
+      },
+      changeStatusFun(data){
+        if(data){
+          this.changeStatus = true
+        }
+      },
+      onSubmit(data){
+        console.log(data)
+      }
     }
   }
 </script>
@@ -253,9 +414,20 @@
     justify-content: center;
     flex-flow: column;
     color: #fff;
-    background: #2184C5;
     text-align: center;
     height: 1rem;
+  }
+  .stay-out-clock{
+    background-image: url('../../assets/images/stayOutClock.png');
+    background-size: 1.9rem 1rem;
+  }
+  .stay-out-late-clock{
+    background-image: url('../../assets/images/stayOutLateClock.png');
+    background-size: 1.9rem 1rem;
+  }
+  .arrive-clock{
+    background-image: url('../../assets/images/arriveClock.png');
+    background-size: 1.9rem 1rem;
   }
   .students-details-banner-content-data-item-number{
     font-size:30px;
