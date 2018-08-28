@@ -104,7 +104,7 @@
           </el-tab-pane>
           <el-tab-pane label="历史打卡数据" name="third">
             <el-table :data="historyListData"  v-loading="loadingStatus" style="width: 100%">
-              <el-table-column prop="lastUpdateTime" label="考勤日期"></el-table-column>
+              <el-table-column prop="clockDate" label="考勤日期"></el-table-column>
               <el-table-column prop="operateAppName" label="操作应用"></el-table-column>
               <el-table-column prop="operatorName" label="操作人"></el-table-column>
               <el-table-column prop="clockStatus" label="考勤状态"></el-table-column>
@@ -133,30 +133,26 @@
         width="30%"
       >
       <div>
-        <el-form ref="form" :model="ruleForm" :rules="rules" label-width="80px">
+        <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="80px">
           <el-form-item label="考勤状态">
-            <el-select v-model="form.clockStatus" placeholder="请选择活动区域">
+            <el-select v-model="ruleForm.clockStatus" style="width: 100%" placeholder="请选择活动区域">
               <el-option label="到勤" value="2"></el-option>
               <el-option label="晚归" value="3"></el-option>
               <el-option label="未归" value="4"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="备注">
-            <el-input type="textarea" placeholder="必填" v-model="form.remark"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="mini" @click="onSubmit">确认</el-button>
-            <el-button size="mini" @click="changeStatus=false">取消</el-button>
+            <el-input type="textarea"  placeholder="必填" v-model="ruleForm.remark"></el-input>
           </el-form-item>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <el-button @click="changeStatus = false" size="mini">取 消</el-button>
+    <el-button type="primary" @click="onSubmit('form')" size="mini">确 定</el-button>
   </span>
     </el-dialog>
     <el-dialog
-      title="修改状态"
+      title="历史详情"
       :visible.sync="historyDetails"
       width="30%"
     >
@@ -170,8 +166,8 @@
         </el-table>
       </div>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <el-button @click="historyDetails = false" size="mini">取 消</el-button>
+    <el-button type="primary" @click="historyDetails = false" size="mini">确 定</el-button>
   </span>
     </el-dialog>
   </div>
@@ -181,15 +177,28 @@
   export default {
     name: "studentsDetails",
     mounted:function(){
-      this.year = this.selectDate.getFullYear()
-      this.month = this.selectDate.getMonth()+1
-      this.getAlCareListData()
-    },
-    activated:function(){
       if(this.$route.params){
         this.dataList = this.$route.params
         this.studentId = this.$route.params.studentId
       }
+      this.selectDate = `${new Date().getFullYear()}-${new Date().getMonth()+1}`
+     if(this.selectDate){
+       this.year = this.selectDate.substring(0,4)
+       this.month = this.selectDate.substring(5,this.selectDate.length)
+     }
+      this.getAlCareListData()
+    },
+    activated:function(){
+      this.selectDate = `${new Date().getFullYear()}-${new Date().getMonth()+1}`
+      if(this.selectDate){
+        this.year = this.selectDate.substring(0,4)
+        this.month = this.selectDate.substring(5,this.selectDate.length)
+      }
+      if(this.$route.params){
+        this.dataList = this.$route.params
+        this.studentId = this.$route.params.studentId
+      }
+      this.getAlCareListData()
     },
     data() {
       return {
@@ -204,14 +213,14 @@
         carePageTotal:0,/*关怀总页数*/
         doorListData:[],/*门禁数据*/
         historyListData:[],/*历史打卡数据*/
-        selectDate:new Date(),
+        selectDate:'',
         year:'',
         month:'',
         showDate:false,
         changeStatus:false,
         historyDetails:false,
-        form: {
-          clockStatus: '1',
+        ruleForm: {
+          clockStatus: '',
           remark: '',
         },
         rules: {
@@ -278,7 +287,7 @@
           }
         }).then(function (res) {
           if(res){
-            _this.doorListData = res.data.result
+            _this.doorListData = res.data.data
           }
         }).catch(function (error) {
           console.log(error)
@@ -298,7 +307,7 @@
           }
         }).then(function (res) {
           if(res){
-            _this.historyListData = res.data.result
+            _this.historyListData = res.data.data
           }
         }).catch(function (error) {
           console.log(error)
@@ -315,9 +324,11 @@
         }
       },
       /*时间选择查询*/
-      selectDateFun(data){
-        this.year = this.selectDate.getFullYear()
-        this.month = this.selectDate.getMonth()+1
+      selectDateFun(){
+        if(this.selectDate){
+          this.year = this.selectDate.getFullYear()
+          this.month = this.selectDate.getMonth()+1
+        }
         if(this.activeName ==='first'){
           this.getAlCareListData()
         }else if(this.activeName ==='second'){
@@ -334,10 +345,45 @@
       changeStatusFun(data){
         if(data){
           this.changeStatus = true
+          this.clockDateParam = `${data.year}${data.month}${data.day}`
+          this.operatorNameParam = data.operatorName
+          this.operatorIdParam = data.operatorId
         }
       },
-      onSubmit(data){
-        console.log(data)
+      onSubmit(){
+        if(this.ruleForm.remark&&this.ruleForm.clockStatus){
+          this.changeStatus = false
+          const _this = this
+          this.$axios.put('/api/student-clock',{
+            appType:2,
+            id:this.studentId,
+            operatorName:this.operatorNameParam,
+            operatorId:this.operatorIdParam,
+            status:this.ruleForm.clockStatus,
+            clockDate:this.clockDateParam,
+            remark:this.ruleForm.remark
+          }).then(function (res) {
+            if(res){
+              if (res.data.code==='000000'){
+                _this.$notify({
+                  title:'提示',
+                  message:'修改成功',
+                  type:'success',
+                  position:'bottom-right'
+                })
+              }
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
+        }else{
+          this.$notify({
+            title:'提示',
+            message:'未填写完毕',
+            type:'warning',
+            position:'bottom-right'
+          })
+        }
       }
     }
   }
