@@ -22,7 +22,7 @@ export default {
     }
   },
   created:function(){
-   
+
   },
   components:{'v-containTop':containTop,'v-containLeft':containLeft,'v-containRight':containRight}
 }
@@ -35,7 +35,7 @@ export default {
 .contain_top{
   height: .6rem;
   /*background:#003086; */
-  background: #224b95; 
+  background: #224b95;
   box-shadow: 0px 5px 10px #b3c2dc;
   position: relative;
 }

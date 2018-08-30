@@ -104,6 +104,9 @@
   text-align: left;
   padding: 0!important;
 }
+.left_list ul li{
+  min-width: 0!important;
+}
 .left_list ul li a{
   display: block;
   color: #fff;
