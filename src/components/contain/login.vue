@@ -71,6 +71,7 @@
       };
     },
     mounted(){
+      sessionStorage.removeItem('token')
       this.getCookie();
     },
     methods: {
