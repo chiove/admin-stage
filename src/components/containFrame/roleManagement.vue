@@ -52,7 +52,7 @@
               :current-page.sync="studentsPageNo"
               :page-size="10"
               layout="prev, pager, next, jumper"
-              :total="studentsPageTotal">
+              :total="totalCount">
             </el-pagination>
           </div>
         </el-tab-pane>
@@ -86,7 +86,7 @@
               :current-page.sync="instructorPageNo"
               :page-size="10"
               layout="prev, pager, next, jumper"
-              :total="instructorPageTotal">
+              :total="totalCount">
             </el-pagination>
           </div>
         </el-tab-pane>
@@ -124,7 +124,7 @@
               :current-page.sync="collegerPageNo"
               :page-size="10"
               layout="prev, pager, next, jumper"
-              :total="collegerPageTotal">
+              :total="totalCount">
             </el-pagination>
           </div>
         </el-tab-pane>
@@ -162,7 +162,7 @@
               :current-page.sync="roomerPageNo"
               :page-size="10"
               layout="prev, pager, next, jumper"
-              :total="roomerPageTotal">
+              :total="totalCount">
             </el-pagination>
           </div>
         </el-tab-pane>
@@ -200,7 +200,7 @@
               :current-page.sync="studentleaderPageNo"
               :page-size="10"
               layout="prev, pager, next, jumper"
-              :total="studentleaderPageTotal">
+              :total="totalCount">
             </el-pagination>
           </div>
         </el-tab-pane>

@@ -38,7 +38,7 @@
           :current-page.sync="pageNo"
           :page-size="10"
           layout="prev, pager, next, jumper"
-          :total="pagesTotal">
+          :total="totalCount">
         </el-pagination>
       </div>
     </div>
@@ -62,7 +62,7 @@
           chartNotClockList:[],/*图表未打卡数据*/
           tableListData:[],/*表格数据*/
           pageNo:1,/*分页条当前页*/
-          pagesTotal:1,/*总页数*/
+          totalCount:1,/*总条数*/
           loadingStatus:false/*加载显示*/
         }
     },
@@ -99,8 +99,19 @@
             }
           }).then(function (res) {
             if(res){
+              res.data.data.result.forEach(function (item,index) {
+                if(item.colckStatus==1){
+                  item.colckStatus = '未打卡'
+                }else  if(item.clockStatus==2){
+                  item.colckStatus = '到勤'
+                }else  if(item.clockStatus==3){
+                  item.colckStatus = '晚归'
+                }else  if(item.clockStatus==4){
+                  item.colckStatus = '未归'
+                }
+              })
               _this.tableListData = res.data.data.result
-              _this.pagesTotal =  res.data.data.totalPages
+              _this.totalCount =  res.data.data.totalCount
               _this.pageNo = res.data.data.pageNo
             }
           }).catch(function (error) {
