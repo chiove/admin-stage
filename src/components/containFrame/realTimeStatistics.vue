@@ -70,7 +70,7 @@
         /*获取图表数据*/
         getChartListData:function(){
           const _this = this
-          this.$axios.get('/api/real-time-stat/clock-stat-by-bulding',{
+          this.$axios.get(process.env.API_HOST+'real-time-stat/clock-stat-by-bulding',{
             params:{}
           }).then(function (res) {
             if(res){
@@ -92,7 +92,7 @@
         getTableListData:function(pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/real-time-stat/clock-stat-by-student',{
+          this.$axios.get(process.env.API_HOST+'real-time-stat/clock-stat-by-student',{
             params:{
               pageNo:pageNo,
               pageSize:10

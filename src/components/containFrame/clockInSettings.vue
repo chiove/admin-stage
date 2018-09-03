@@ -240,7 +240,7 @@
                 })
               }
               const _this = this
-              this.$axios.put('/api/system-config',{
+              this.$axios.put(process.env.API_HOST+'system-config',{
                   headers:{
                     'Content-Type':'x-www-form-urlencoded'
                   },
@@ -279,7 +279,7 @@
         /*获取设置数据*/
         getSystemListData:function () {
           const _this = this
-          this.$axios.get('/api/system-config').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'system-config').then(function (res) {
             if(res){
               let listFormat = {}
               console.log(res.data.data)
@@ -300,7 +300,7 @@
           }).catch(function (error) {
             console.log(error)
           })
-          this.$axios.get('/api/clock-day-list-from-curr').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'clock-day-list-from-curr').then(function (res) {
             if(res){
               console.log(res)
               _this.ruleForm.clockRepeatTime = res.data.data.dayList

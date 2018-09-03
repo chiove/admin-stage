@@ -154,7 +154,7 @@
         addNewDateConfirmFun(){
           const _this = this
           if(_this.ruleForm.endDate&&_this.ruleForm.endYear&&_this.ruleForm.startDate&&_this.ruleForm.startYear&&_this.ruleForm.termNumber){
-            this.$axios.post('/api/term',{
+            this.$axios.post(process.env.API_HOST+'term',{
               "endDate":  `${_this.ruleForm.endDate.getFullYear()}-${_this.ruleForm.endDate.getMonth()+1}-${_this.ruleForm.endDate.getDay()}`,
               "endYear": _this.ruleForm.endYear.getFullYear(),
               "startDate": `${_this.ruleForm.startDate.getFullYear()}-${_this.ruleForm.startDate.getMonth()+1}-${_this.ruleForm.startDate.getDay()}`,
@@ -194,7 +194,7 @@
         /*获取学期日期*/
         getStudyDate(){
           const _this = this
-          this.$axios.get('/api/term').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'term').then(function (res) {
             if(res){
                 res.data.data.forEach(function (item,index) {
                   _this.listData.push({

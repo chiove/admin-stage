@@ -86,7 +86,7 @@
           if (valid) {
             self.logining = true;
             self.getNowFormatDate();
-            axios.post('/api/login',{
+            axios.post(process.env.API_HOST+'login',{
               username:self.ruleForm.account,
               password:self.ruleForm.checkPass
             }).then(res=>{

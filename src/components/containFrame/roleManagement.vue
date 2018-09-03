@@ -315,7 +315,7 @@
         getStudentsListData:function(nameOrCode,pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/user-role-manage/student',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/student',{
             params:{
               nameOrCode:nameOrCode,
               pageNo:pageNo,
@@ -345,7 +345,7 @@
         getInstructorListData:function(nameOrCode,pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/user-role-manage/instructor',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/instructor',{
             params:{
               nameOrCode:nameOrCode,
               pageNo:pageNo,
@@ -375,7 +375,7 @@
         getCollegerListData:function(nameOrCode,pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/user-role-manage/secondary-college-admin',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/secondary-college-admin',{
             params:{
               nameOrCode:nameOrCode,
               pageNo:pageNo,
@@ -405,7 +405,7 @@
         getRoomerListData:function(nameOrCode,pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/user-role-manage/dormitory-admin',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/dormitory-admin',{
             params:{
               nameOrCode:nameOrCode,
               pageNo:pageNo,
@@ -435,7 +435,7 @@
         getStudentleaderListData:function(nameOrCode,pageNo){
           const _this = this
           this.loadingStatus = true
-          this.$axios.get('/api/user-role-manage/student-office-admin',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/student-office-admin',{
             params:{
               nameOrCode:nameOrCode,
               pageNo:pageNo,
@@ -464,7 +464,7 @@
         /*查询机构树*/
         getTreeListData:function(){
           const _this = this
-          this.$axios.get('/api/user-role-manage/org-tree').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'user-role-manage/org-tree').then(function (res) {
             if(res){
               _this.treeListData[0].children = res.data.data
               _this.treeListData[0].children.orgId = res.data.data[0].parentOrgId
@@ -479,7 +479,7 @@
         /*根据机构查所属教职工*/
         getOrgStaff:function(orgId){
           const _this = this
-          this.$axios.get('/api/user-role-manage/org/'+orgId+'/staff',{
+          this.$axios.get(process.env.API_HOST+'user-role-manage/org/'+orgId+'/staff',{
             params:{
               pageSize:1000
             }
@@ -564,7 +564,7 @@
             this.multipleSelection.forEach(function (item,index) {
               studentsIds.push(item.studentId)
             })
-            this.$axios.delete('/api/user-role-manage/student-phone', {
+            this.$axios.delete(process.env.API_HOST+'user-role-manage/student-phone', {
             data:{
                "studentIds":studentsIds
              }
@@ -624,7 +624,7 @@
           this.rightListData.forEach(function (item,index) {
             staffIdList.push(item.key)
           })
-          this.$axios.post('/api/student-office-admin',{
+          this.$axios.post(process.env.API_HOST+'student-office-admin',{
             'staffIdList':staffIdList
           }).then(function (res) {
             if(res){
@@ -657,7 +657,7 @@
               "orgIdList": params,
               "userId": this.userId
             })
-            this.$axios.post('/api/secondary-college-admin',{
+            this.$axios.post(process.env.API_HOST+'secondary-college-admin',{
               "refList": _this.collegeRefList
             }).then(function (res) {
               if(res){
@@ -687,7 +687,7 @@
               "buildingId": params,
               "userId": this.userId
             })
-            this.$axios.post('/api/dormitory-admin',{
+            this.$axios.post(process.env.API_HOST+'dormitory-admin',{
               "refList": _this.buildRefList
             }).then(function (res) {
               if(res){
@@ -752,7 +752,7 @@
             this.multipleSelection.forEach(function (item,index) {
               userIds.push(item.userId)
             })
-              this.$axios.put('/api/user-role-manage/delete-account',{
+              this.$axios.put(process.env.API_HOST+'user-role-manage/delete-account',{
                 "roleType": roletype,
                 "userIds": userIds
               }).then(function (res) {
@@ -803,7 +803,7 @@
         getAllcollegeList(){
           const _this = this
           this.collegeOrBuildListData = []
-          this.$axios.get('/api/select-data/secondary-college/all').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'select-data/secondary-college/all').then(function (res) {
             if(res){
               res.data.data.forEach(function (item,index) {
                 item.label = item.collegeName
@@ -819,7 +819,7 @@
         getAllbuilding(){
           const  _this = this
           this.collegeOrBuildListData = []
-          this.$axios.get('/api/select-data/dormitory-building/all').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'select-data/dormitory-building/all').then(function (res) {
             if(res){
               _this.collegeOrBuildListData = []
               res.data.data.forEach(function (item,index) {

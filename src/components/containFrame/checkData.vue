@@ -117,7 +117,7 @@
         /*查询学院下拉列表*/
         getCollegeListData:function(){
           const _this = this
-          this.$axios.get('/api/select-data/secondary-college/query-by-user',{params:{userId:_this.userId}
+          this.$axios.get(process.env.API_HOST+'select-data/secondary-college/query-by-user',{params:{userId:_this.userId}
           }).then(function (res) {
             _this.collegeListData = res.data.data
           }).catch(function (error) {
@@ -133,7 +133,7 @@
             }
           })
           /*查询专业下拉列表*/
-          this.$axios.get('/api/select-data/major-info/all',{params:{orgId:data}
+          this.$axios.get(process.env.API_HOST+'select-data/major-info/all',{params:{orgId:data}
           }).then(function (res) {
             _this.majorListData = res.data.data
           }).catch(function (error) {
@@ -147,7 +147,7 @@
             majorId:this.$refs.collegeValue.value,
             orgId:data
           }
-          this.$axios.get('/api/select-data/instructor-info/all',{params:params
+          this.$axios.get(process.env.API_HOST+'select-data/instructor-info/all',{params:params
           }).then(function (res) {
             console.log(res)
             _this.instructorListData = res.data.data
@@ -158,7 +158,7 @@
         /*查询宿舍下拉列表*/
         getBuildListData:function(){
           const _this = this
-          this.$axios.get('/api/dormitory-building/query-by-user',{params:{userId:_this.userId}
+          this.$axios.get(process.env.API_HOST+'dormitory-building/query-by-user',{params:{userId:_this.userId}
           }).then(function (res) {
             _this.buildListData = res.data.data
           }).catch(function (error) {
@@ -181,7 +181,7 @@
         getTableData:function(params){
           this.loadingStatus = true
           const _this = this
-          this.$axios.get('/api/data-recheck/student-clock-care-stat',{params:params
+          this.$axios.get(process.env.API_HOST+'data-recheck/student-clock-care-stat',{params:params
           }).then(function (res) {
             _this.tableData = res.data.data.result
             _this.pageTotal = res.data.data.totalPages

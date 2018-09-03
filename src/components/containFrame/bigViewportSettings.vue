@@ -31,7 +31,7 @@
       name: "bigViewportSettings",
       mounted:function () {
         const _this = this
-        this.$axios.get('/api/screen-config').then(function (res) {
+        this.$axios.get(process.env.API_HOST+'screen-config').then(function (res) {
           if(res){
             console.log(res)
             _this.form.input = res.data.data
@@ -50,7 +50,7 @@
       methods: {
         onSubmit() {
           const _this = this
-          this.$axios.put('/api/screen-config',{
+          this.$axios.put(process.env.API_HOST+'screen-config',{
             "carouselText": `${this.form.input}`
           }).then(function (res) {
             if(res){
