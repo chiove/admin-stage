@@ -12,7 +12,7 @@
         </el-form-item>
         <el-form-item prop="checkPass" v-if="see">
           <el-input type="password" v-model="ruleForm.checkPass" auto-complete="off" placeholder="密码" v-on:keyup.enter="handleSubmit2"></el-input>
-          <span @click.stop="changebg()" v-if="ruleForm.checkPass.length < 7"><img src="../../assets/images/repassword.png"></span>
+          <span @click.stop="changebg()" v-if="ruleForm.checkPass.length < 7"></span>
         </el-form-item>
         <!--<el-form-item prop="checkPass" v-else>
           <el-input type="text" v-model="ruleForm.checkPass" auto-complete="off" placeholder="密码" v-on:keyup.enter="handleSubmit2"></el-input>

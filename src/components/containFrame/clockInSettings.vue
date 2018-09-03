@@ -214,7 +214,8 @@
             clockRepeatTime: [
               { required: true, message: '请选择时间', trigger: 'blur' }
             ],
-          }
+          },
+          dayList:[],/*多选日期*/
         }
       },
       methods: {
@@ -223,7 +224,6 @@
           this.$refs[formName].validate((valid) => {
             if (valid) {
               if(this.ruleForm.clockRepeatTime){
-                const dayList = []
                 this.ruleForm.clockRepeatTime.forEach(function (item,index) {
                   let month = '',day = ''
                   if(item.getMonth()+1<10){
@@ -236,7 +236,7 @@
                   }else{
                     day = item.getDay()
                   }
-                  dayList.push( `${item.getFullYear()}${month}${day}`)
+                  this.dayList.push( `${item.getFullYear()}${month}${day}`)
                 })
               }
               const _this = this
@@ -250,7 +250,7 @@
                   "checkDormEndTime": `${_this.ruleForm.checkDormkEndTime.getHours()}:${_this.ruleForm.checkDormkEndTime.getMinutes()}:${_this.ruleForm.checkDormkEndTime.getSeconds()}`,
                   "clockEndTime": `${_this.ruleForm.clockEndTime.getHours()}:${_this.ruleForm.clockEndTime.getMinutes()}:${_this.ruleForm.clockEndTime.getSeconds()}`,
                   "clockStartTime": `${_this.ruleForm.clockStartTime.getHours()}:${_this.ruleForm.clockStartTime.getMinutes()}:${_this.ruleForm.clockStartTime.getSeconds()}`,
-                  "dayList":dayList,
+                  "dayList":_this.dayList,
               }).then(function (res) {
                 if(res){
                   if(res.data.code ==='000000'){
