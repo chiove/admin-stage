@@ -25,6 +25,7 @@
                 ref="clockEndTimeDom"
                 v-model="ruleForm.clockEndTime"
                 size="mini"
+                @change="endTimeChange"
                 placeholder="打卡结束时间">
               </el-time-picker>
             </el-form-item>
@@ -123,7 +124,7 @@
         return {
           zoom: 18,
           center: [106.518544,29.562249],
-          address: '初始化地址',
+          address: '',
           lng: 0,
           lat: 0,
           loaded: false,
@@ -221,9 +222,11 @@
       methods: {
         /*提交表单*/
         submitForm(formName) {
+          const _this = this
           this.$refs[formName].validate((valid) => {
             if (valid) {
               if(this.ruleForm.clockRepeatTime){
+                let dayListArray = []
                 this.ruleForm.clockRepeatTime.forEach(function (item,index) {
                   let month = '',day = ''
                   if(item.getMonth()+1<10){
@@ -236,10 +239,10 @@
                   }else{
                     day = item.getDay()
                   }
-                  this.dayList.push( `${item.getFullYear()}${month}${day}`)
+                  dayListArray.push(`${item.getFullYear()}${month}${day}`)
                 })
+                _this.dayList = dayListArray
               }
-              const _this = this
               this.$axios.put(process.env.API_HOST+'system-config',{
                   headers:{
                     'Content-Type':'x-www-form-urlencoded'
@@ -258,6 +261,12 @@
                       message: '设置成功',
                       position: 'bottom-right',
                       type: 'success'
+                    })
+                  }else{
+                    _this.$notify({
+                      message: res.data.message,
+                      position: 'bottom-right',
+                      type: 'warning'
                     })
                   }
                 }
@@ -311,15 +320,24 @@
         },
         /*新增打卡地址*/
         addNewClock:function(){
-          this.circles[0].radius = Number(this.ruleForm.scope)
-          let clockAddress = {
-            name: this.address,
-            posLatitude: this.lat,
-            posLongitude: this.lng,
-            scope: Number(this.ruleForm.scope),
-            id:new Date().getTime()+Math.floor(Math.random()*100)+new Date().getTime()
+          if(this.address!==''){
+            this.circles[0].radius = Number(this.ruleForm.scope)
+            let clockAddress = {
+              name: this.address,
+              posLatitude: this.lat,
+              posLongitude: this.lng,
+              scope: Number(this.ruleForm.scope),
+              id:new Date().getTime()+Math.floor(Math.random()*100)+new Date().getTime()
+            }
+            this.addressReqDTOList.push(clockAddress)
+          }else{
+            this.$notify({
+              title:'提示',
+              message:'请选择地址',
+              position:'bottom-right',
+              type:'warning'
+            })
           }
-          this.addressReqDTOList.push(clockAddress)
         },
         /*删除打卡地点*/
         deleteClockPositionFun:function (e) {
@@ -335,6 +353,10 @@
           this.addressReqDTOList = listDelete
           listData = listDelete
           listDelete = []
+        },
+        endTimeChange(){
+          // console.log()
+          this.ruleForm.checkDormStartTime = this.ruleForm.clockEndTime
         },
       }
     }
