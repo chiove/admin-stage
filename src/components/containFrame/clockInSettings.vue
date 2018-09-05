@@ -15,8 +15,10 @@
           <div class="check-room-time-container">
             <el-form-item label="打卡时间" prop="clockStartTime">
               <el-time-picker
+                ref="clockStartTimeDom"
                 v-model="ruleForm.clockStartTime"
                 size="mini"
+                value-format="HH:mm:ss"
                 placeholder="打卡开始时间">
               </el-time-picker>
             </el-form-item>
@@ -25,6 +27,7 @@
                 ref="clockEndTimeDom"
                 v-model="ruleForm.clockEndTime"
                 size="mini"
+                value-format="HH:mm:ss"
                 @change="endTimeChange"
                 placeholder="打卡结束时间">
               </el-time-picker>
@@ -36,6 +39,7 @@
                 ref="checkDormStartTimeDom"
                 v-model="ruleForm.checkDormStartTime"
                 size="mini"
+                value-format="HH:mm:ss"
                 placeholder="选择时间">
               </el-time-picker>
             </el-form-item>
@@ -44,6 +48,7 @@
                 ref="checkDormkEndTimeDom"
                 v-model="ruleForm.checkDormkEndTime"
                 size="mini"
+                value-format="HH:mm:ss"
                 placeholder="选择时间">
               </el-time-picker>
             </el-form-item>
@@ -53,6 +58,7 @@
               ref="clockRepeatTimeDom"
               type="dates"
               size="mini"
+              value-format="yyyyMMdd"
               v-model="ruleForm.clockRepeatTime"
               placeholder="选择一个或多个日期">
             </el-date-picker>
@@ -117,7 +123,6 @@
       name: "ClockInSettings",
       mounted:function(){
         this.getSystemListData()
-        this.ruleForm.clockStartTime = '12:00:25'
       },
       data(){
         const self = this;
@@ -225,35 +230,17 @@
           const _this = this
           this.$refs[formName].validate((valid) => {
             if (valid) {
-              if(this.ruleForm.clockRepeatTime){
-                let dayListArray = []
-                this.ruleForm.clockRepeatTime.forEach(function (item,index) {
-                  let month = '',day = ''
-                  if(item.getMonth()+1<10){
-                    month = `0${item.getMonth()+1}`
-                  }else{
-                    month = item.getMonth()+1
-                  }
-                  if(item.getDay()<10){
-                    day = `0${item.getDay()}`
-                  }else{
-                    day = item.getDay()
-                  }
-                  dayListArray.push(`${item.getFullYear()}${month}${day}`)
-                })
-                _this.dayList = dayListArray
-              }
               this.$axios.put(process.env.API_HOST+'system-config',{
                   headers:{
                     'Content-Type':'x-www-form-urlencoded'
                   },
                   "addressReqDTOList": _this.addressReqDTOList,
                   "checkDevice": _this.ruleForm.checkDevice,
-                  "checkDormStartTime": `${_this.ruleForm.checkDormStartTime.getHours()}:${_this.ruleForm.checkDormStartTime.getMinutes()}:${_this.ruleForm.checkDormStartTime.getSeconds()}`,
-                  "checkDormEndTime": `${_this.ruleForm.checkDormkEndTime.getHours()}:${_this.ruleForm.checkDormkEndTime.getMinutes()}:${_this.ruleForm.checkDormkEndTime.getSeconds()}`,
-                  "clockEndTime": `${_this.ruleForm.clockEndTime.getHours()}:${_this.ruleForm.clockEndTime.getMinutes()}:${_this.ruleForm.clockEndTime.getSeconds()}`,
-                  "clockStartTime": `${_this.ruleForm.clockStartTime.getHours()}:${_this.ruleForm.clockStartTime.getMinutes()}:${_this.ruleForm.clockStartTime.getSeconds()}`,
-                  "dayList":_this.dayList,
+                  "checkDormStartTime": _this.ruleForm.checkDormStartTime,
+                  "checkDormEndTime": _this.ruleForm.checkDormkEndTime,
+                  "clockEndTime": _this.ruleForm.clockEndTime,
+                  "clockStartTime": _this.ruleForm.clockStartTime,
+                  "dayList": _this.ruleForm.clockRepeatTime,
               }).then(function (res) {
                 if(res){
                   if(res.data.code ==='000000'){
@@ -291,7 +278,6 @@
           this.$axios.get(process.env.API_HOST+'system-config').then(function (res) {
             if(res){
               let listFormat = {}
-              console.log(res.data.data)
               res.data.data.clockAddressSettingList.forEach(function (item,index) {
                 listFormat.name = item.address
                 listFormat.lat = item.lat
@@ -300,18 +286,18 @@
                 _this.addressReqDTOList.push(listFormat)
               })
               // _this.addressReqDTOList = res.data.data.clockAddressSettingList
-               _this.ruleForm.checkDevice = res.data.data.checkDevice
-               _this.ruleForm.checkDormStartTime = res.data.data.checkClockStartTime
-               _this.ruleForm.checkDormkEndTime = res.data.data.checkClockEndTime
-               _this.ruleForm.clockEndTime = res.data.data.clockEndTime
+               _this.ruleForm.checkDevice = res.data.data.checkDevice.toString()
+               _this.ruleForm.checkDormStartTime =res.data.data.checkClockStartTime
+               _this.ruleForm.checkDormkEndTime =  res.data.data.checkClockEndTime
+               _this.ruleForm.clockEndTime =  res.data.data.clockEndTime
                _this.ruleForm.clockStartTime = res.data.data.clockStartTime
+
             }
           }).catch(function (error) {
             console.log(error)
           })
           this.$axios.get(process.env.API_HOST+'clock-day-list-from-curr').then(function (res) {
             if(res){
-              console.log(res)
               _this.ruleForm.clockRepeatTime = res.data.data.dayList
             }
           }).catch(function (error) {
@@ -355,7 +341,6 @@
           listDelete = []
         },
         endTimeChange(){
-          // console.log()
           this.ruleForm.checkDormStartTime = this.ruleForm.clockEndTime
         },
       }
