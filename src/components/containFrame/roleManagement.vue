@@ -250,7 +250,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="stepFun" size="mini">返 回</el-button>
-        <el-button size="mini" @click="nextAddUserStatus = false">关闭</el-button>
+        <el-button @click="nextAddUserStatus=false" size="mini">关闭</el-button>
         <el-button type="primary"  size="mini" @click="saveDataFun">保存</el-button>
       </span>
     </el-dialog>
@@ -645,18 +645,13 @@
         },
         /*二级学院管理员和宿舍管理员保存列表*/
         saveDataFun:function () {
+          this.collegeOrBuildListData = []
           const _this = this
+          this.collegeRefList=[{
+            "orgIdList": this.collegeOrBuildCheckList,
+            "userId": this.userId
+          }]
           if(this.activeName ==='third'){
-            const params = []
-            this.collegeOrBuildCheckList.forEach(function (item,index) {
-              delete item.key
-              delete item.label
-              params.push(item)
-            })
-            this.collegeRefList.push({
-              "orgIdList": params,
-              "userId": this.userId
-            })
             this.$axios.post(process.env.API_HOST+'secondary-college-admin',{
               "refList": _this.collegeRefList
             }).then(function (res) {
@@ -668,6 +663,13 @@
                     position: 'bottom-right',
                     type: 'success'
                   })
+                  _this.getCollegerListData()
+                }else {
+                  _this.$notify({
+                    message: res.data.message,
+                    position: 'bottom-right',
+                    type: 'warning'
+                  })
                 }
               }
             }).catch(function (error) {
@@ -677,16 +679,10 @@
               })
             })
           }else if(this.activeName ==='fourth'){
-            const params = []
-            this.collegeOrBuildCheckList.forEach(function (item,index) {
-              delete item.key
-              delete item.label
-              params.push(item)
-            })
-            this.buildRefList.push({
-              "buildingId": params,
+            this.buildRefList=[{
+              "buildingId": this.collegeOrBuildCheckList,
               "userId": this.userId
-            })
+            }]
             this.$axios.post(process.env.API_HOST+'dormitory-admin',{
               "refList": _this.buildRefList
             }).then(function (res) {
@@ -696,6 +692,13 @@
                     message: '保存成功',
                     position: 'bottom-right',
                     type: 'success'
+                  })
+                  _this.getRoomerListData()
+                }else {
+                  _this.$notify({
+                    message: res.data.message,
+                    position: 'bottom-right',
+                    type: 'warning'
                   })
                 }
               }
@@ -731,9 +734,11 @@
         treeClickCollegeFun:function(data){
           this.userId = data.key
           if(this.activeName ==='third'){
+              this.checkList = []
               this.getAllcollegeList()
           }else if(this.activeName ==='fourth'){
-              this.getAllbuilding()
+            this.checkList = []
+            this.getAllbuilding()
           }
         },
         /*删除用户*/
@@ -788,16 +793,28 @@
         },
         /*获取选中的值*/
         checkTrueValueFun:function (data) {
-          const params = []
-          this.collegeOrBuildListData.forEach(function (item,index) {
-            data.forEach(function (v,i) {
-              if(v===item.label){
-                params.push(item)
-              }
+          if(this.activeName ==='third'){
+            const params = []
+            this.collegeOrBuildListData.forEach(function (item,index) {
+              data.forEach(function (v,i) {
+                if(v===item.label){
+                  params.push(item.collegeId)
+                }
+              })
             })
+            this.collegeOrBuildCheckList = params
+          }else if(this.activeName ==='fourth'){
+            const params1 = []
+            this.collegeOrBuildListData.forEach(function (item,index) {
+              data.forEach(function (v,i) {
+                if(v===item.label){
+                  params1.push(item.buildingId)
+                }
+              })
+            })
+            this.collegeOrBuildCheckList = params1
+          }
 
-          })
-          this.collegeOrBuildCheckList = params
         },
         /*查询学院*/
         getAllcollegeList(){

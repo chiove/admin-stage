@@ -16,7 +16,6 @@
             <el-input type="textarea" v-model="form.input" placeholder="请输入文本：长度30个中文字符"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button  size="mini" @click="backRouterFun">返回</el-button>
             <el-button type="primary"  size="mini" @click="onSubmit">确认</el-button>
           </el-form-item>
         </el-form>
@@ -33,7 +32,6 @@
         const _this = this
         this.$axios.get(process.env.API_HOST+'screen-config').then(function (res) {
           if(res){
-            console.log(res)
             _this.form.input = res.data.data
           }
         }).catch(function (error) {

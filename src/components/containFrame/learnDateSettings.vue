@@ -18,11 +18,11 @@
           <i class="el-icon-time"></i>
           <span>{{item.startYear}}-{{item.endYear}}学年</span>
         </div>
-        <div class="learn-date-title-little">
+        <div class="learn-date-title-little" v-if="item.termNumberOne.startDate&&item.termNumberOne.endDate">
           <i class="el-icon-bell"></i>
           <span>第一学期</span>
         </div>
-        <div class="learn-date-title-lv3">
+        <div class="learn-date-title-lv3" v-if="item.termNumberOne.startDate&&item.termNumberOne.endDate">
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon"></div>
             <div>开始日期 {{item.termNumberOne.startDate}}</div>
@@ -32,11 +32,11 @@
             <div>结束日期 {{item.termNumberOne.endDate}}</div>
           </div>
         </div>
-        <div class="learn-date-title-little">
+        <div class="learn-date-title-little" v-if="item.termNumberTwo.startDate&&item.termNumberTwo.endDate">
           <i class="el-icon-bell"></i>
           <span>第二学期</span>
         </div>
-        <div class="learn-date-title-lv3">
+        <div class="learn-date-title-lv3" v-if="item.termNumberTwo.startDate&&item.termNumberTwo.endDate">
           <div class="learn-date-title-lv3-text">
             <div class="learn-date-title-lv3-icon"></div>
             <div>开始日期 {{item.termNumberTwo.startDate}}</div>
@@ -170,6 +170,7 @@
                     position:'bottom-right',
                     type:'success'
                   })
+                  _this.getStudyDate()
                 }else{
                   _this.$notify({
                     title:'提示',
@@ -206,7 +207,7 @@
                     },
                     termNumberTwo:{
                       startDate:item.termTwoStartDate,
-                      endDate: item.termTwoEndDat,
+                      endDate: item.termTwoEndDate,
                     }
                   })
                 })
