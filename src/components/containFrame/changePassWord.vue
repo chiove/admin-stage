@@ -13,14 +13,14 @@
         <div class="change-pass-word-container-init">系统初始密码：123456，请及时修改！</div>
         <div class="change-pass-word-form-container">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="1rem" class="change-pass-word-form">
-          <el-form-item label="原密码" prop="name">
-            <el-input v-model="ruleForm.name" size="mini"></el-input>
+          <el-form-item label="原密码" prop="oldpsd">
+            <el-input v-model="ruleForm.oldpsd" size="mini"></el-input>
           </el-form-item>
-          <el-form-item label="新密码" prop="name">
-            <el-input v-model="ruleForm.name" size="mini"></el-input>
+          <el-form-item label="新密码" prop="newpsd">
+            <el-input v-model="ruleForm.newpsd" size="mini"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="name">
-            <el-input v-model="ruleForm.name" size="mini"></el-input>
+          <el-form-item label="确认密码" prop="conpsd">
+            <el-input v-model="ruleForm.conpsd" size="mini"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetForm('ruleForm')">重置</el-button>
@@ -35,12 +35,16 @@
 <script>
     export default {
       name: "changePassWord",
+      mounted:function () {
+        this.token = sessionStorage.getItem('token')
+      },
       data(){
         return {
+          token:'',
           ruleForm: {
-            name: '',
-            region: '',
-            date1: '',
+            oldpsd: '',
+            newpsd: '',
+            conpsd: '',
             date2: '',
             delivery: false,
             type: [],
@@ -48,36 +52,55 @@
             desc: ''
           },
           rules: {
-            name: [
-              { required: true, message: '请输入活动名称', trigger: 'blur' },
-              { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            oldpsd: [
+              { required: true, message: '请输入原密码', trigger: 'blur' },
             ],
-            region: [
-              { required: true, message: '请选择活动区域', trigger: 'change' }
+            newpsd: [
+              { required: true, message: '请输入新密码', trigger: 'blur' },
             ],
-            date1: [
-              { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+            conpsd: [
+              { required: true, message: '请输入确认密码', trigger: 'blur' },
             ],
-            date2: [
-              { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-            ],
-            type: [
-              { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-            ],
-            resource: [
-              { required: true, message: '请选择活动资源', trigger: 'change' }
-            ],
-            desc: [
-              { required: true, message: '请填写活动形式', trigger: 'blur' }
-            ]
           }
         }
       },
       methods: {
         submitForm(formName) {
+          const _this = this
           this.$refs[formName].validate((valid) => {
+            if(_this.ruleForm.newpsd!==_this.ruleForm.conpsd){
+              _this.$notify.error({
+                title:'提示',
+                message:'确认密码与新密码不一致',
+                position:'bottom-right'
+              })
+              return
+            }
             if (valid) {
-              alert('submit!');
+              this.$axios.put(process.env.API_HOST+'/password',{
+                  newPassword:_this.ruleForm.newpsd,
+                  oldPassword:_this.ruleForm.oldpsd,
+                  token:_this.token
+              }).then(function (res) {
+                if(res){
+                  if(res.data.code==='000000'){
+                    _this.$notify({
+                      title:'提示',
+                      message:'修改成功',
+                      type:'success',
+                      position:'bottom-right'
+                    })
+                    _this.$refs[formName].resetFields();
+                  }else{
+                    _this.$notify.error({
+                      title:'提示',
+                      message:'修改失败',
+                      position:'bottom-right'
+                    })
+                    _this.$refs[formName].resetFields();
+                  }
+                }
+              })
             } else {
               console.log('error submit!!');
               return false;
