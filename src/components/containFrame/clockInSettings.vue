@@ -90,7 +90,7 @@
               </div>
             </div>
             <div class="clock-in-settings-map-container">
-              <!--<el-amap-search-box class="search-box"></el-amap-search-box>-->
+              <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
               <el-amap vid="amap" class="amap-demo" :zoom="zoom" :center="center" :events="events">
                 <el-amap-circle v-for="(circle,index) in circles"  :center="circle.center" :radius="circle.radius" :fill-opacity="circle.fillOpacity" :events="circle.events"></el-amap-circle>
                 <el-amap-marker v-for="(marker, index) in markers"  vid="component-marker" :position="marker.position"></el-amap-marker>
@@ -133,6 +133,7 @@
           lng: 0,
           lat: 0,
           loaded: false,
+          searchOption:{},
           events: {
             click(e) {
               let { lng, lat } = e.lnglat;
@@ -225,6 +226,24 @@
         }
       },
       methods: {
+        onSearchResult(pois) {
+          const self = this
+          let latSum = 0;
+          let lngSum = 0;
+          if (pois.length > 0) {
+            pois.forEach(poi => {
+              let {lng, lat} = poi;
+              lngSum += lng;
+              latSum += lat;
+              self.markers.push({position:[poi.lng, poi.lat]});
+            });
+            let center = {
+              lng: lngSum / pois.length,
+              lat: latSum / pois.length
+            };
+            this.center = [center.lng, center.lat];
+          }
+        },
         /*提交表单*/
         submitForm(formName) {
           const _this = this
@@ -280,25 +299,25 @@
               let listFormat = {}
               res.data.data.clockAddressSettingList.forEach(function (item,index) {
                 listFormat.name = item.address
-                listFormat.lat = item.lat
-                listFormat.lng = item.lng
+                listFormat.posLatitude = item.lat
+                listFormat.posLongitude = item.lon
                 listFormat.scope = item.radius
                 _this.addressReqDTOList.push(listFormat)
               })
-              // _this.addressReqDTOList = res.data.data.clockAddressSettingList
                _this.ruleForm.checkDevice = res.data.data.checkDevice.toString()
                _this.ruleForm.checkDormStartTime =res.data.data.checkClockStartTime
                _this.ruleForm.checkDormkEndTime =  res.data.data.checkClockEndTime
                _this.ruleForm.clockEndTime =  res.data.data.clockEndTime
                _this.ruleForm.clockStartTime = res.data.data.clockStartTime
-
             }
           }).catch(function (error) {
             console.log(error)
           })
           this.$axios.get(process.env.API_HOST+'clock-day-list-from-curr').then(function (res) {
             if(res){
-              _this.ruleForm.clockRepeatTime = res.data.data.dayList
+              res.data.data.forEach(function (item,index) {
+                _this.ruleForm.clockRepeatTime.push(item.toString())
+              })
             }
           }).catch(function (error) {
             console.log(error)
