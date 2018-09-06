@@ -12,7 +12,6 @@
         active-text-color="#224B95">
         <el-submenu index="1">
           <template slot="title">
-            <i class="el-icon-caret-bottom"></i>
             <span>系统维护设置</span>
           </template>
           <el-menu-item-group>
@@ -24,7 +23,6 @@
         </el-submenu>
         <el-submenu index="2">
            <template slot="title">
-             <i class="el-icon-caret-bottom"></i>
              <span slot="title">用户角色管理</span>
            </template>
           <el-menu-item-group>
@@ -33,7 +31,6 @@
         </el-submenu>
         <el-submenu index="3">
           <template slot="title">
-            <i class="el-icon-caret-bottom"></i>
             <span slot="title">统计复核</span>
           </template>
           <el-menu-item-group>
