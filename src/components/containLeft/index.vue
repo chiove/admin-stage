@@ -126,7 +126,7 @@
     color: #fff;
   }
   .is-active{
-    background-color: #fff!important;
+    background-color: #fff;
     color: #0F3A88 !important;
   }
 </style>
