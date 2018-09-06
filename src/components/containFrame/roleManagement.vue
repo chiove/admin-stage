@@ -217,9 +217,9 @@
          <div class="add-user-teansfer-container">
            <el-transfer
              filterable
-             :titles="['未选择用户', '一选择用户']"
+             :titles="['未选择用户', '已选择用户']"
              :button-texts="['到左边', '到右边']"
-             filter-placeholder="搜索工号"
+             filter-placeholder="搜索姓名"
              v-model="orgIdStaffListDataValue"
              @change="getRightList"
              :data="orgIdStaffListData">
@@ -624,6 +624,14 @@
           this.rightListData.forEach(function (item,index) {
             staffIdList.push(item.key)
           })
+          if(staffIdList.length===0){
+            _this.$notify({
+              message: '已选择用户不能为空',
+              position: 'bottom-right',
+              type: 'warning'
+            })
+            return
+          }
           this.$axios.post(process.env.API_HOST+'student-office-admin',{
             'staffIdList':staffIdList
           }).then(function (res) {
@@ -657,7 +665,6 @@
             }).then(function (res) {
               if(res){
                 if(res.data.code ==='000000') {
-                  this.nextAddUserStatus = false
                   _this.$notify({
                     message: '保存成功',
                     position: 'bottom-right',
@@ -770,11 +777,11 @@
                     })
                     const param = _this.form.name
                     if(_this.activeName ==='third'){
-                      this.getCollegerListData(param)
+                      _this.getCollegerListData(param)
                     }else if(_this.activeName ==='fourth'){
-                      this.getRoomerListData(param)
+                      _this.getRoomerListData(param)
                     }else if(_this.activeName ==='fifth'){
-                      this.getStudentleaderListData(param)
+                      _this.getStudentleaderListData(param)
                     }
                   }
                 }
