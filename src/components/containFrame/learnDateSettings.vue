@@ -61,6 +61,7 @@
                   <el-date-picker
                     v-model="ruleForm.startYear"
                     type="year"
+                    value-format="yyyy"
                     size="mini"
                     style="margin-right: .2rem"
                     placeholder="选择开始日期">
@@ -69,6 +70,7 @@
                     v-model="ruleForm.endYear"
                     type="year"
                     size="mini"
+                    value-format="yyyy"
                     placeholder="选择结束日期">
                   </el-date-picker>
                 </div>
@@ -84,6 +86,7 @@
                 style="width: 2.08rem"
                 v-model="ruleForm.startDate"
                 type="date"
+                value-format="yyyy-MM-dd"
                 size="mini"
                 placeholder="选择开始日期">
               </el-date-picker>
@@ -93,6 +96,7 @@
                 style="width: 2.08rem"
                 v-model="ruleForm.endDate"
                 type="date"
+                value-format="yyyy-MM-dd"
                 size="mini"
                 placeholder="选择结束日期">
               </el-date-picker>
@@ -155,10 +159,10 @@
           const _this = this
           if(_this.ruleForm.endDate&&_this.ruleForm.endYear&&_this.ruleForm.startDate&&_this.ruleForm.startYear&&_this.ruleForm.termNumber){
             this.$axios.post(process.env.API_HOST+'term',{
-              "endDate":  `${_this.ruleForm.endDate.getFullYear()}-${_this.ruleForm.endDate.getMonth()+1}-${_this.ruleForm.endDate.getDay()}`,
-              "endYear": _this.ruleForm.endYear.getFullYear(),
-              "startDate": `${_this.ruleForm.startDate.getFullYear()}-${_this.ruleForm.startDate.getMonth()+1}-${_this.ruleForm.startDate.getDay()}`,
-              "startYear": _this.ruleForm.startYear.getFullYear(),
+              "endDate":  _this.ruleForm.endDate,
+              "endYear": _this.ruleForm.endYear,
+              "startDate": _this.ruleForm.startDate,
+              "startYear": _this.ruleForm.startYear,
               "termNumber": _this.ruleForm.termNumber
             }).then(function (res) {
               if(res){

@@ -36,6 +36,7 @@
           <div class="check-room-time-container">
             <el-form-item label="查寝开始时间" prop="checkDormStartTime">
               <el-time-picker
+                :disabled='disabled'
                 ref="checkDormStartTimeDom"
                 v-model="ruleForm.checkDormStartTime"
                 size="mini"
@@ -127,7 +128,7 @@
       data(){
         const self = this;
         return {
-          zoom: 18,
+          zoom: 13,
           center: [106.518544,29.562249],
           address: '',
           lng: 0,
@@ -189,6 +190,7 @@
               template: '<span>1</span>',
             }
           ],
+          disabled:true,
           ruleForm: {
             clockStartTime:'', /*打卡开始时间*/
             clockEndTime:'',/*打卡结束时间*/
