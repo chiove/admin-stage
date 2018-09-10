@@ -65,11 +65,11 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="打卡地点">
-            <div class="clock-in-settings-address-container" v-for="(item,index) in addressReqDTOList" v-bind:key='index' @click="deleteClockPositionFun">
+            <div class="clock-in-settings-address-container" v-for="(item,index) in addressReqDTOList" v-bind:key='index'>
               <div class="clock-in-settings-address-delete-span">打卡地址：{{item.name}}</div>
                <div class="clock-in-settings-address-delete">
                  <span class="clock-in-settings-address-delete-span">详细地址：打卡地点默认为中心点{{item.scope}}m范围内</span>
-                 <div size="mini"  class="delete-button" :data-index="JSON.stringify(item)">删除打卡地点</div>
+                 <div size="mini"  class="delete-button" :data-index="JSON.stringify(item)" @click.stop="deleteClockPositionFun">删除打卡地点</div>
                </div>
             </div>
             <div class="clock-in-settings-address-container">
@@ -350,6 +350,7 @@
         /*删除打卡地点*/
         deleteClockPositionFun:function (e) {
           const _this = this
+          console.log(e.target)
           if(e.target.dataset.index){
             const deleteObject = JSON.parse(e.target.dataset.index)
             this.addressReqDTOList.forEach(function (item,index) {
