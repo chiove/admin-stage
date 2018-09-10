@@ -48,7 +48,20 @@
       methods: {
         onSubmit() {
           const _this = this
-          this.$axios.put(process.env.API_HOST+'screen-config',{
+          if(this.form.input.length===0){
+            _this.$notify.error({
+              message: '不能为空',
+              position: 'bottom-right'
+            });
+            return
+          }else if(this.form.input.length>30){
+            _this.$notify.error({
+              message: '超过限制字数',
+              position: 'bottom-right'
+            });
+            return
+          }
+            this.$axios.put(process.env.API_HOST+'screen-config',{
             "carouselText": `${this.form.input}`
           }).then(function (res) {
             if(res){
