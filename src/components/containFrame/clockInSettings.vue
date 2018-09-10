@@ -159,7 +159,7 @@
           circles: [
             {
               center: [106.518544,29.562249],
-              radius:50,
+              radius:1000,
               fillOpacity: 0.2,
               events: {
                 click: () => {
@@ -196,13 +196,14 @@
             checkDormkEndTime:'',/*查寝结束时间*/
             clockRepeatTime:[],/*重复打卡时间*/
             checkDevice:'1',/*是否检查设备*/
-            scope:50,/*设置打卡范围*/
+            scope:1000,/*设置打卡范围*/
           },
           scopeOption:[
-            {value:50, label:'50米'},
-            {value:100, label:'200米'},
-            {value:200, label:'100米'},
-            {value:500, label:'500米'},
+            {value:1000, label:'1千米'},
+            {value:1500, label:'1.5千米'},
+            {value:2000, label:'2千米'},
+            {value:3000, label:'3千米'},
+            {value:4000, label:'4千米'},
           ],
           addressReqDTOList:[],/*地图数据*/
           rules: {
