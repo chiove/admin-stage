@@ -158,7 +158,7 @@
     >
       <div>
         <el-table :data="historyListData"  v-loading="loadingStatus" style="width: 100%">
-          <el-table-column prop="lastUpdateTime" label="操作时间日期"></el-table-column>
+          <el-table-column prop="lastUpdateTime" label="操作时间日期" width="200"></el-table-column>
           <el-table-column prop="operateAppName" label="操作应用"></el-table-column>
           <el-table-column prop="operatorName" label="操作人"></el-table-column>
           <el-table-column prop="clockStatus" label="考勤状态"></el-table-column>
