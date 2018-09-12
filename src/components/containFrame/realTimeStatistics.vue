@@ -153,6 +153,7 @@
               containLabel: true
             },
             yAxis:  {
+              triggerEvent:true,
               type: 'value'
             },
             xAxis: {
@@ -197,6 +198,9 @@
                 data: []
               }
             ]
+          })
+          dataChartLine.on('click',function (params) {
+              console.log(params)
           })
         }
     }
