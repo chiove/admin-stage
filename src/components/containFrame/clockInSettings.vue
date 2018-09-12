@@ -36,6 +36,7 @@
           <div class="check-room-time-container">
             <el-form-item label="查寝开始时间" prop="checkDormStartTime">
               <el-time-picker
+                :disabled='disabled'
                 ref="checkDormStartTimeDom"
                 v-model="ruleForm.checkDormStartTime"
                 size="mini"
@@ -64,11 +65,11 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="打卡地点">
-            <div class="clock-in-settings-address-container" v-for="(item,index) in addressReqDTOList" v-bind:key='index' @click="deleteClockPositionFun">
+            <div class="clock-in-settings-address-container" v-for="(item,index) in addressReqDTOList" v-bind:key='index'>
               <div class="clock-in-settings-address-delete-span">打卡地址：{{item.name}}</div>
                <div class="clock-in-settings-address-delete">
                  <span class="clock-in-settings-address-delete-span">详细地址：打卡地点默认为中心点{{item.scope}}m范围内</span>
-                 <div size="mini"  class="delete-button" :data-index="JSON.stringify(item)">删除打卡地点</div>
+                 <div size="mini"  class="delete-button" :data-index="JSON.stringify(item)" @click.stop="deleteClockPositionFun">删除打卡地点</div>
                </div>
             </div>
             <div class="clock-in-settings-address-container">
@@ -127,7 +128,7 @@
       data(){
         const self = this;
         return {
-          zoom: 18,
+          zoom: 13,
           center: [106.518544,29.562249],
           address: '',
           lng: 0,
@@ -189,6 +190,7 @@
               template: '<span>1</span>',
             }
           ],
+          disabled:true,
           ruleForm: {
             clockStartTime:'', /*打卡开始时间*/
             clockEndTime:'',/*打卡结束时间*/
@@ -348,6 +350,7 @@
         /*删除打卡地点*/
         deleteClockPositionFun:function (e) {
           const _this = this
+          console.log(e.target)
           if(e.target.dataset.index){
             const deleteObject = JSON.parse(e.target.dataset.index)
             this.addressReqDTOList.forEach(function (item,index) {

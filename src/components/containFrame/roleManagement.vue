@@ -613,6 +613,7 @@
         },
         /*树形节点点击查询*/
         treeHandleNodeClick:function (data) {
+          this.rightListData=[]
           if(data.orgId!==''){
             this.getOrgStaff(data.orgId)
           }
@@ -645,6 +646,12 @@
                 })
                 const param = _this.form.name
                 _this.getStudentleaderListData(param)
+              }else{
+                _this.$notify({
+                  message: res.data.message,
+                  position: 'bottom-right',
+                  type: 'warning'
+                })
               }
             }
           }).catch(function (error) {
