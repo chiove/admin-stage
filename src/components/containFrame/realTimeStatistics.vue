@@ -53,7 +53,7 @@
       /*图表渲染*/
       this.getChartListData()
       /*默认表格显示*/
-      this.getTableListData()
+      this.getTableListData(1,1)
     },
     data(){
         return {
@@ -63,7 +63,9 @@
           tableListData:[],/*表格数据*/
           pageNo:1,/*分页条当前页*/
           totalCount:1,/*总条数*/
-          loadingStatus:false/*加载显示*/
+          loadingStatus:false/*加载显示*/,
+          buildingId:'',
+          buildingIdList:[]
         }
     },
     methods:{
@@ -78,6 +80,7 @@
                 _this.chartBuildingList.push(item.buildingName)
                 _this.chartAlClockList.push(item.clockCount)
                 _this.chartNotClockList.push(item.notClockCount)
+                _this.buildingIdList.push(item.buildingId)
                 _this.drawBar()
               })
             }
@@ -89,11 +92,12 @@
           })
         },
        /*获取表格数据*/
-        getTableListData:function(pageNo){
+        getTableListData:function(pageNo,buildingId ){
           const _this = this
           this.loadingStatus = true
           this.$axios.get(process.env.API_HOST+'real-time-stat/clock-stat-by-student',{
             params:{
+              buildingId:buildingId,
               pageNo:pageNo,
               pageSize:10
             }
@@ -126,7 +130,7 @@
         },
         /*分页查询*/
         handleCurrentChange(val) {
-          this.getTableListData(val)
+          this.getTableListData(val,this.buildingId)
         },
         /*查看详情页*/
        handleClick(row) {
@@ -200,7 +204,8 @@
             ]
           })
           dataChartLine.on('click',function (params) {
-              console.log(params)
+            _this.buildingId = _this.buildingIdList[params.dataIndex]
+            _this.getTableListData(_this.pageNo,_this.buildingId)
           })
         }
     }
