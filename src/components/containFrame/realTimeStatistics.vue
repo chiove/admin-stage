@@ -53,7 +53,7 @@
       /*图表渲染*/
       this.getChartListData()
       /*默认表格显示*/
-      this.getTableListData(1,1)
+      this.getTableListData(this.pageNo,this.buildingId)
     },
     data(){
         return {
@@ -64,7 +64,7 @@
           pageNo:1,/*分页条当前页*/
           totalCount:1,/*总条数*/
           loadingStatus:false/*加载显示*/,
-          buildingId:'',
+          buildingId:1,
           buildingIdList:[]
         }
     },
@@ -104,14 +104,19 @@
           }).then(function (res) {
             if(res){
               res.data.data.result.forEach(function (item,index) {
-                if(item.colckStatus==1){
-                  item.colckStatus = '未打卡'
-                }else  if(item.clockStatus==2){
-                  item.colckStatus = '到勤'
-                }else  if(item.clockStatus==3){
-                  item.colckStatus = '晚归'
-                }else  if(item.clockStatus==4){
-                  item.colckStatus = '未归'
+                switch (item.colckStatus){
+                  case 1:
+                    item.colckStatus = '未打卡'
+                    break;
+                  case 2:
+                    item.colckStatus = '到勤'
+                    break;
+                  case 3:
+                    item.colckStatus = '晚归'
+                    break;
+                  case 4:
+                    item.colckStatus = '未归'
+                    break;
                 }
               })
               _this.tableListData = res.data.data.result
@@ -135,9 +140,9 @@
         /*查看详情页*/
        handleClick(row) {
         this.$router.push({
-          name:'studentsDetails',
-          path:'/index/studentsDetails',
-          params:row
+          name:'studentsDetailsRealTime',
+          path:'/index/studentsDetailsRealTime',
+          query:row
          })
        },
         drawBar:function () {

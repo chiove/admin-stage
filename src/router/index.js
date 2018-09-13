@@ -75,6 +75,14 @@ const router = new Router({
           meta: {
             requiresAuth: true
           }
+        },
+        {
+          name:'studentsDetailsRealTime',
+          path: '/index/studentsDetailsRealTime',
+          component: resolve => require(['@/components/containFrame/studentsDetailsRealTime'],resolve),
+          meta: {
+          requiresAuth: true
+          }
         }
       ]
     },
