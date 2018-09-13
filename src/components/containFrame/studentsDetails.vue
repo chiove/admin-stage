@@ -357,6 +357,8 @@
       changeStatusFun(data){
         if(data){
           this.changeStatus = true
+          data.month<10?data.month=`0${data.month}`:data.month
+          data.day<10?data.day=`0${data.day}`:data.day
           this.clockDateParam = `${data.year}${data.month}${data.day}`
           this.operatorNameParam = data.operatorName
           this.operatorIdParam = data.operatorId
@@ -401,6 +403,7 @@
                   type:'success',
                   position:'bottom-right'
                 })
+                _this.getHistoryClockListData()
               }else{
                 _this.$notify({
                   title:'提示',

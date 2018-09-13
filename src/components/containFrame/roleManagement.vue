@@ -420,6 +420,7 @@
               _this.roomerPageNo = res.data.data.pageNo
               _this.roomerPageTotal = res.data.data.totalPages
               _this.totalCount = res.data.data.totalCount
+              console.log(_this.totalCount)
             }
           }).catch(function (error) {
             _this.$notify.error({
