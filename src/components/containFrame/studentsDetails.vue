@@ -362,6 +362,24 @@
         }
       },
       onSubmit(){
+        if(this.ruleForm.remark.length===0){
+          this.$notify({
+            title:'提示',
+            message:'备注不能为空',
+            type:'warning',
+            position:'bottom-right'
+          })
+          return
+        }
+        if(this.ruleForm.remark.length>30){
+          this.$notify({
+            title:'提示',
+            message:'备注不能超过30个字符',
+            type:'warning',
+            position:'bottom-right'
+          })
+          return
+        }
         if(this.ruleForm.remark&&this.ruleForm.clockStatus){
           this.changeStatus = false
           const _this = this
@@ -380,6 +398,13 @@
                   title:'提示',
                   message:'修改成功',
                   type:'success',
+                  position:'bottom-right'
+                })
+              }else{
+                _this.$notify({
+                  title:'提示',
+                  message:res.data.message,
+                  type:'warning',
                   position:'bottom-right'
                 })
               }
