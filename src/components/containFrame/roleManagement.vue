@@ -115,6 +115,7 @@
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="code" label="工号"></el-table-column>
+            <el-table-column prop="collegeName" label="权限范围"></el-table-column>
             <el-table-column prop="roleName" label="角色"></el-table-column>
           </el-table>
           <div class="daily-data-pagination-container">
@@ -153,6 +154,7 @@
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="code" label="工号"></el-table-column>
+            <el-table-column prop="buildingName" label="权限范围"></el-table-column>
             <el-table-column prop="roleName" label="角色"></el-table-column>
           </el-table>
           <div class="daily-data-pagination-container">
@@ -386,6 +388,10 @@
               _this.collegerListData = res.data.data.result
               res.data.data.result.forEach(function (item,index) {
                 item.roleName = '二级学院管理员'
+                item.collegeName=''
+                item.collegeList.forEach(function (data,index) {
+                    item.collegeName += `${data.collegeName} `;
+                })
               })
               _this.collegerPageNo = res.data.data.pageNo
               _this.collegerPageTotal = res.data.data.totalPages
@@ -416,6 +422,10 @@
               _this.roomerListData = res.data.data.result
               res.data.data.result.forEach(function (item,index) {
                 item.roleName = '宿舍管理员'
+                item.buildingName=''
+                item.buildingList.forEach(function (data,index) {
+                  item.buildingName += `${data.buildingName} `;
+                })
               })
               _this.roomerPageNo = res.data.data.pageNo
               _this.roomerPageTotal = res.data.data.totalPages
