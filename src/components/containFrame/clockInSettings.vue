@@ -252,6 +252,14 @@
           const _this = this
           this.$refs[formName].validate((valid) => {
             if (valid) {
+              if(_this.addressReqDTOList.length==0){
+                _this.$notify({
+                  message: '未增加地址',
+                  position: 'bottom-right',
+                  type: 'warning'
+                })
+                return
+              }
               this.$axios.put(process.env.API_HOST+'system-config',{
                   headers:{
                     'Content-Type':'x-www-form-urlencoded'
