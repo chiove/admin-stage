@@ -19,14 +19,14 @@
             :value="item.collegeId">
           </el-option>
         </el-select>
-        <el-select v-model="majorListDataValue" @change="majorSelectFun" ref="majorValue" placeholder="全部专业" size="mini" class="tool-bar-search-select">
+        <!--<el-select v-model="majorListDataValue" @change="majorSelectFun" ref="majorValue" placeholder="全部专业" size="mini" class="tool-bar-search-select">
           <el-option
             v-for="item in majorListData"
             :key="item.majorId"
             :label="item.majorName"
             :value="item.majorId">
           </el-option>
-        </el-select>
+        </el-select>-->
         <el-select v-model="buildListDataValue" ref="buildDom" placeholder="全部宿舍"  size="mini" class="tool-bar-search-select">
           <el-option
             v-for="item in buildListData"
@@ -168,7 +168,7 @@
           const params = {
             buildingId:this.$refs.buildDom.value,
             orgId:this.$refs.collegeValue.value,
-            majorId:this.$refs.majorValue.value,
+            /*majorId:this.$refs.majorValue.value,*/
             instructor:this.$refs.instructorValue.value,
             nameOrCode:this.$refs.studentNameDom.value,
           }
@@ -201,7 +201,7 @@
           const params = {
             buildingId:this.$refs.buildDom.value,
             orgId:this.$refs.collegeValue.value,
-            majorId:this.$refs.majorValue.value,
+            /*majorId:this.$refs.majorValue.value,*/
             instructor:this.$refs.instructorValue.value,
             nameOrCode:this.$refs.studentNameDom.value,
             descOrAsc:descOrAsc,
@@ -223,7 +223,7 @@
           const params = {
             buildingId:this.$refs.buildDom.value,
             orgId:this.$refs.collegeValue.value,
-            majorId:this.$refs.majorValue.value,
+            /*majorId:this.$refs.majorValue.value,*/
             instructor:this.$refs.instructorValue.value,
             nameOrCode:this.$refs.studentNameDom.value,
             pageNo:val,
