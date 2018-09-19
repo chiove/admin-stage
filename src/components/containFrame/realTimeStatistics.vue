@@ -208,9 +208,12 @@
               }
             ]
           })
+          dataChartLine.off('click');
           dataChartLine.on('click',function (params) {
-            _this.buildingId = _this.buildingIdList[params.dataIndex]
-            _this.getTableListData(_this.pageNo,_this.buildingId)
+            if(params.dataIndex!==undefined){
+              _this.buildingId = _this.buildingIdList[params.dataIndex]
+              _this.getTableListData(_this.pageNo,_this.buildingId)
+            }
           })
         }
     }

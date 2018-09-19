@@ -91,6 +91,7 @@
         this.getBuildListData()
         /*查询表格数据*/
         this.getTableData()
+        this.getInstuctorList()
       },
       activated:function () {
         this.userId = localStorage.getItem('userId')
@@ -230,6 +231,17 @@
             pageSize:10
           }
           this.getTableData(params)
+        },
+        /*获取辅导员列表*/
+        getInstuctorList(){
+          const _this = this
+          this.$axios.get(process.env.API_HOST+'/select-data/instructor-info/all').then(function (res) {
+            if(res){
+              _this.instructorListData = res.data.data
+            }
+          }).catch(function (error) {
+            console.log(error)
+          })
         }
       }
     }
