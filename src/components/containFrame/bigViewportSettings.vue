@@ -13,7 +13,8 @@
       <div class="big-viewport-input">
         <el-form ref="form" :model="form" >
           <el-form-item>
-            <el-input type="textarea" v-model="form.input" placeholder="请输入文本：长度30个中文字符"></el-input>
+            <el-input type="textarea" v-model="form.input" placeholder="请输入文本：长度30个中文字符" @input="changeFun"></el-input>
+            <span style="float: right">{{textLength}}/30</span>
           </el-form-item>
           <el-form-item>
             <el-button type="primary"  size="mini" @click="onSubmit">确认</el-button>
@@ -33,6 +34,7 @@
         this.$axios.get(process.env.API_HOST+'screen-config').then(function (res) {
           if(res){
             _this.form.input = res.data.data
+            _this.textLength = res.data.data.length
           }
         }).catch(function (error) {
           console.log(error)
@@ -42,7 +44,8 @@
         return {
           form: {
             input:''
-          }
+          },
+          textLength:0
         }
       },
       methods: {
@@ -82,6 +85,9 @@
         },
         backRouterFun(){
           this.$router.go(-1)
+        },
+        changeFun(){
+          this.textLength = this.form.input.length
         }
       }
     }

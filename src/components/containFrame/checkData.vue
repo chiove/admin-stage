@@ -47,9 +47,9 @@
         </el-input>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="searchSubmitFun">搜索</el-button>
       </div>
-      <el-table :data="tableData" @sort-change="sortChange1" v-loading="loadingStatus" style="width: 100%">
+      <el-table :data="tableData" v-loading="loadingStatus" style="width: 100%">
         <el-table-column prop="studentName" label="姓名"></el-table-column>
-        <el-table-column prop="studentCode" label="学号"></el-table-column>
+        <el-table-column prop="studentCode" label="学号" width="180"></el-table-column>
         <el-table-column prop="className" label="班级"></el-table-column>
         <el-table-column prop="collegeName" label="学院名称"></el-table-column>
         <el-table-column prop="majorName" label="专业名称"></el-table-column>
@@ -58,8 +58,8 @@
         <el-table-column prop="dormitoryName" label="寝室号"></el-table-column>
         <el-table-column prop="bedCode" label="床号"></el-table-column>
         <el-table-column prop="totalCared" label="被关怀次数"></el-table-column>
-        <el-table-column prop="totalStayOut" label="累计未归天数" sortable="custom"></el-table-column>
-        <el-table-column prop="totalStayOutLate" label="累计晚归天数" sortable="custom"></el-table-column>
+        <el-table-column prop="totalStayOut" label="累计未归天数" width="180"></el-table-column>
+        <el-table-column prop="totalStayOutLate" label="累计晚归天数" width="180"></el-table-column>
         <el-table-column label="个人详情">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
