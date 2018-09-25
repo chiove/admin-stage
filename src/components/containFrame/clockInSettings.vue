@@ -15,6 +15,7 @@
           <div class="check-room-time-container">
             <el-form-item label="打卡时间" prop="clockStartTime">
               <el-time-picker
+                :disabled="clockStartTimeFlag"
                 ref="clockStartTimeDom"
                 v-model="ruleForm.clockStartTime"
                 size="mini"
@@ -24,6 +25,7 @@
             </el-form-item>
             <el-form-item prop="clockEndTime">
               <el-time-picker
+                :disabled="clockEndTimeFlag"
                 ref="clockEndTimeDom"
                 v-model="ruleForm.clockEndTime"
                 size="mini"
@@ -47,6 +49,7 @@
             <el-form-item label="次日截止时间" prop="checkDormkEndTime">
               <el-time-picker
                 ref="checkDormkEndTimeDom"
+                :disabled="checkDormkEndTimeFlag"
                 v-model="ruleForm.checkDormkEndTime"
                 size="mini"
                 value-format="HH:mm:ss"
@@ -60,6 +63,7 @@
               type="dates"
               size="mini"
               value-format="yyyyMMdd"
+              :disabled="clockRepeatTimeFlag"
               v-model="ruleForm.clockRepeatTime"
               placeholder="选择一个或多个日期">
             </el-date-picker>
@@ -128,6 +132,10 @@
       data(){
         const self = this;
         return {
+          clockStartTimeFlag:true,
+          clockEndTimeFlag:true,
+          checkDormkEndTimeFlag:true,
+          clockRepeatTimeFlag:true,
           zoom: 13,
           center: [106.518544,29.562249],
           address: '',
@@ -320,6 +328,10 @@
                _this.ruleForm.checkDormkEndTime =  res.data.data.checkClockEndTime
                _this.ruleForm.clockEndTime =  res.data.data.clockEndTime
                _this.ruleForm.clockStartTime = res.data.data.clockStartTime
+               _this.clockStartTimeFlag = false
+               _this.clockEndTimeFlag = false
+               _this.checkDormkEndTimeFlag = false
+               _this.clockRepeatTimeFlag = false
             }
           }).catch(function (error) {
             console.log(error)
