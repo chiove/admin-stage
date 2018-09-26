@@ -906,6 +906,9 @@
     justify-content: space-between;
     align-items: center;
   }
+  .role-manage-form-search button{
+    width: 120px;
+  }
   .role-manage-form-search-input{
     margin-right: .1rem;
   }
