@@ -332,8 +332,17 @@
                _this.clockEndTimeFlag = false
                _this.checkDormkEndTimeFlag = false
                _this.clockRepeatTimeFlag = false
+            }else{
+              _this.clockStartTimeFlag = false
+              _this.clockEndTimeFlag = false
+              _this.checkDormkEndTimeFlag = false
+              _this.clockRepeatTimeFlag = false
             }
           }).catch(function (error) {
+            _this.clockStartTimeFlag = false
+            _this.clockEndTimeFlag = false
+            _this.checkDormkEndTimeFlag = false
+            _this.clockRepeatTimeFlag = false
             console.log(error)
           })
           this.$axios.get(process.env.API_HOST+'clock-day-list-from-curr').then(function (res) {

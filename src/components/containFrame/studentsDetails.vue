@@ -136,7 +136,7 @@
       <div>
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="80px">
           <el-form-item label="考勤状态">
-            <el-select v-model="ruleForm.clockStatus" style="width: 100%" placeholder="请选择活动区域">
+            <el-select v-model="ruleForm.clockStatus" style="width: 100%" placeholder="请选择考勤状态">
               <el-option label="到勤" value="2"></el-option>
               <el-option label="晚归" value="3"></el-option>
               <el-option label="未归" value="4"></el-option>
@@ -228,7 +228,7 @@
         },
         rules: {
           clockStatus: [
-            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            { required: true, message: '请选择考勤状态', trigger: 'blur' },
           ],
           remark: [
             { required: true, message: '请输入备注', trigger: 'blur' },
