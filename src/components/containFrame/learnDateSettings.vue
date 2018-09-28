@@ -76,7 +76,7 @@
                 </div>
               </el-form-item>
               <el-form-item label="学期选择" prop="termNumber">
-                <el-select v-model="ruleForm.termNumber" style="width: 2.08rem" size="mini" placeholder="请选择活动区域">
+                <el-select v-model="ruleForm.termNumber" style="width: 2.08rem" size="mini" placeholder="请选择学期">
                   <el-option label="第一学期" value="1"></el-option>
                   <el-option label="第二学期" value="2"></el-option>
                 </el-select>

@@ -588,7 +588,7 @@
                     type: 'success'
                   });
                 }
-                _this.getStudentsListData()
+                _this.getStudentsListData(null,_this.studentsPageNo)
               }
             }).catch(function (error) {
               _this.$notify.error({

@@ -315,8 +315,8 @@
           const _this = this
           this.$axios.get(process.env.API_HOST+'system-config').then(function (res) {
             if(res){
-              let listFormat = {}
               res.data.data.clockAddressSettingList.forEach(function (item,index) {
+                let listFormat = {}
                 listFormat.name = item.address
                 listFormat.posLatitude = item.lat
                 listFormat.posLongitude = item.lon

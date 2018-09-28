@@ -362,6 +362,7 @@
             }
           }).then(function (res) {
             if(res){
+              console.log(res.data.data)
               res.data.data.forEach(function (item,index) {
                 switch (item.clockStatus){
                   case 1:
