@@ -379,18 +379,15 @@
         /*删除打卡地点*/
         deleteClockPositionFun:function (e) {
           const _this = this
-          console.log(e.target)
+          let addressReqDTOList = this.addressReqDTOList
           if(e.target.dataset.index){
-            const deleteObject = JSON.parse(e.target.dataset.index)
-            this.addressReqDTOList.forEach(function (item,index) {
-              if(item.id!==deleteObject.id){
-                listDelete.push(item)
+            addressReqDTOList.forEach(function (item,index) {
+              if(JSON.stringify(addressReqDTOList[index]) == e.target.dataset.index){
+                addressReqDTOList.splice(index,1)
               }
             })
           }
-          this.addressReqDTOList = listDelete
-          listData = listDelete
-          listDelete = []
+          this.addressReqDTOList = addressReqDTOList
         },
         endTimeChange(){
           this.ruleForm.checkDormStartTime = this.ruleForm.clockEndTime
