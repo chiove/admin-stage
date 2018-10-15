@@ -235,7 +235,11 @@
         /*获取辅导员列表*/
         getInstuctorList(){
           const _this = this
-          this.$axios.get(process.env.API_HOST+'/select-data/instructor-info/all').then(function (res) {
+          this.$axios.get(process.env.API_HOST+'/select-data/instructor-info/all',{
+            params:{
+              userId:_this.userId
+            }
+          }).then(function (res) {
             if(res){
               _this.instructorListData = res.data.data
             }

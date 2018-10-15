@@ -209,6 +209,10 @@
             scope:1000,/*设置打卡范围*/
           },
           scopeOption:[
+            {value:50, label:'0.05千米'},
+            {value:100, label:'0.1千米'},
+            {value:200, label:'0.2千米'},
+            {value:500, label:'0.5千米'},
             {value:1000, label:'1千米'},
             {value:1500, label:'1.5千米'},
             {value:2000, label:'2千米'},
