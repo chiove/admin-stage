@@ -179,12 +179,13 @@
           }
           this.getTableData(params)
         },
+        /*清空值*/
         resetFormValue(){
           this.collegeListDataValue = ''
           this.buildListDataValue = ''
           this.instructorListDataValue = ''
           this.studentNameValue = ''
-
+          this.getInstuctorList()
         },
         /*表格查询*/
         getTableData:function(params){
